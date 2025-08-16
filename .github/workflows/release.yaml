@@ -4,6 +4,10 @@ on:
   release:
     types: [published]
 
+defaults:
+  run:
+    working-directory: codinsight
+
 jobs:
   build-and-publish:
     runs-on: ubuntu-latest
