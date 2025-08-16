@@ -4,6 +4,14 @@ on:
   release:
     types: [published]
 
+permissions:
+  contents: read        # ソース取得
+  id-token: write       # uv の trusted publishing 用
+
+defaults:
+  run:
+    working-directory: codinsight
+
 jobs:
   build-and-publish:
     runs-on: ubuntu-latest
@@ -27,6 +35,4 @@ jobs:
         run: uv build
 
       - name: Publish to PyPI
-        env:
-          UV_PYPI_TOKEN: ${{ secrets.UV_PYPI_TOKEN }}
-        run: uv publish
+        run: uv publish --verbose -t ${{ secrets.UV_PYPI_TOKEN }}
