@@ -37,4 +37,5 @@ jobs:
       - name: Publish to PyPI
         env:
           UV_PYPI_TOKEN: ${{ secrets.UV_PYPI_TOKEN }}
-        run: uv publish --non-interactive --no-trusted
+          UV_TRUSTED: "false"
+        run: uv publish
