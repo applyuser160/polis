@@ -4,6 +4,10 @@ on:
   release:
     types: [published]
 
+permissions:
+  contents: read        # ソース取得
+  id-token: write       # uv の trusted publishing 用
+
 defaults:
   run:
     working-directory: codinsight
