@@ -1,7 +1,7 @@
 from code_insight.code_analysis.style import Style, StyleAnalysisResult
 
 
-def test_style() -> None:
+def test_style_normal() -> None:
     # テスト観点: スタイルのコード解析(正常系)
 
     # Arrange
@@ -22,6 +22,22 @@ def test_style() -> None:
     assert result.comment_rate == 0.25
     assert result.docstring_rate == 0.25
     assert result.pep8_violation_rate == 0.25
+
+
+def test_style_empty() -> None:
+    # テスト観点: スタイルのコード解析(空文字列)
+
+    # Arrange
+    source_code = ""
+
+    # Act
+    result: StyleAnalysisResult = Style().analyze(source_code=source_code)
+
+    # Assert
+    assert result.naming_convention == 0.0
+    assert result.comment_rate == 0.0
+    assert result.docstring_rate == 0.0
+    assert result.pep8_violation_rate == 0.0
 
 
 def test_get_style_naming_convention() -> None:

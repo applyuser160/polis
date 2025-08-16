@@ -87,4 +87,8 @@ class Style(AbstractAnalysis[StyleAnalysisResult]):
         """PEP8違反率を取得"""
         checker = pycodestyle.Checker(lines=source_code.splitlines())
         checker.check_all()
-        return checker.report.total_errors / self.get_total_lines(source_code)
+
+        if total_lines := self.get_total_lines(source_code):
+            return checker.report.total_errors / total_lines
+
+        return 0
