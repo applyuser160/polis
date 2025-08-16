@@ -1,4 +1,8 @@
-def main():
+"""mainモジュール."""
+
+
+def main() -> None:
+    """main関数."""
     print("Hello from codinsight!")
 
 

@@ -1,0 +1,49 @@
+repos:
+  # コード整形: Black
+  - repo: https://github.com/psf/black
+    rev: 23.9.1
+    hooks:
+      - id: black
+        language_version: python3
+        files: ^codinsight/
+
+  # import整理: isort
+  - repo: https://github.com/PyCQA/isort
+    rev: 5.12.0
+    hooks:
+      - id: isort
+        language_version: python3
+        files: ^codinsight/
+
+  # Lint: flake8
+  - repo: https://github.com/pycqa/flake8
+    rev: 7.0.0
+    hooks:
+      - id: flake8
+        language_version: python3
+        files: ^codinsight/
+        additional_dependencies: [flake8-bugbear]
+
+  # 型チェック: mypy
+  - repo: https://github.com/pre-commit/mirrors-mypy
+    rev: v1.17.1
+    hooks:
+      - id: mypy
+        language_version: python3
+        files: ^codinsight/
+
+  # docstring チェック: pydocstyle
+  - repo: https://github.com/PyCQA/pydocstyle
+    rev: 6.3.0
+    hooks:
+      - id: pydocstyle
+        language_version: python3
+        files: ^codinsight/
+
+  # セキュリティチェック: bandit
+  - repo: https://github.com/PyCQA/bandit
+    rev: 1.7.5
+    hooks:
+      - id: bandit
+        language_version: python3
+        files: ^codinsight/
