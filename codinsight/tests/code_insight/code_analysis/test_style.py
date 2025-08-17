@@ -83,10 +83,10 @@ def test_get_style_pep8_violation_rate() -> None:
     # テスト観点: スタイルのコード解析(PEP8違反率)
 
     # Arrange
-    source_code = "def foo():\n    a = 1\n    b = 2\n"
+    source_code = "\ndef foo():\n    a = 1\n    b = 2\n"
 
     # Act
     result: StyleAnalysisResult = Style().analyze(source_code=source_code)
 
     # Assert
-    assert result.pep8_violation_rate == 1 / 3
+    assert result.pep8_violation_rate == 0.25

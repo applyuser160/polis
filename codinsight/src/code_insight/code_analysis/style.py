@@ -86,7 +86,11 @@ class Style(AbstractAnalysis[StyleAnalysisResult]):
 
     def get_pep8_violation_rate(self, source_code: str) -> float:
         """PEP8違反率を取得"""
-        checker = pycodestyle.Checker(lines=source_code.splitlines())
+        lines = [line for line in source_code.splitlines() if line.strip()]
+        if not lines:
+            return 0
+
+        checker = pycodestyle.Checker(lines=lines)
         checker.check_all()
 
         if total_lines := self.get_total_lines(source_code):
