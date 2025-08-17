@@ -25,8 +25,20 @@ def test_struct_normal() -> None:
     assert result.function_count == 4
     assert result.class_count == 1
     assert result.line_count == 10
-    assert result.staticmethod_rate == 0.25
+    assert result.argument_count == 0.0
     assert result.return_type_hint == 0.25
+    assert result.staticmethod_rate == 0.25
+    assert result.class_method_rate == 0.0
+    assert result.abstractmethod_rate == 0.0
+    assert result.property_rate == 0.0
+    assert result.method_count == 3.0
+    assert result.attribute_count == 0.0
+    assert result.public_rate == 2 / 3
+    assert result.private_rate == 1 / 3
+    assert result.dependency == 0.0
+    assert result.cohesion == 1.0
+    assert result.inheritance_depth == 0.0
+    assert result.subclass_count == 0.0
 
 
 def test_struct_empty() -> None:
@@ -42,5 +54,17 @@ def test_struct_empty() -> None:
     assert result.function_count == 0
     assert result.class_count == 0
     assert result.line_count == 0
-    assert result.staticmethod_rate == 0.0
+    assert result.argument_count == 0.0
     assert result.return_type_hint == 0.0
+    assert result.staticmethod_rate == 0.0
+    assert result.class_method_rate == 0.0
+    assert result.abstractmethod_rate == 0.0
+    assert result.property_rate == 0.0
+    assert result.method_count == 0.0
+    assert result.attribute_count == 0.0
+    assert result.public_rate == 0.0
+    assert result.private_rate == 0.0
+    assert result.dependency == 0.0
+    assert result.cohesion == 1.0
+    assert result.inheritance_depth == 0.0
+    assert result.subclass_count == 0.0
