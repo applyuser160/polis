@@ -2,6 +2,7 @@ from enum import StrEnum, auto
 from typing import Any, Type
 
 from code_insight.code_analysis.abstract import AbstractAnalysis, BaseAnalysisResult
+from code_insight.code_analysis.redundancy import Redundancy
 from code_insight.code_analysis.algorithm import Algorithm
 from code_insight.code_analysis.struct import Struct
 from code_insight.code_analysis.style import Style
@@ -22,6 +23,7 @@ class CodeAnalysisType(StrEnum):
 
     STYLE = auto()
     STRUCT = auto()
+    REDUNDANCY = auto()
     ALGORITHM = auto()
     COMPLEXITY = auto()
 
@@ -32,6 +34,8 @@ class CodeAnalysisType(StrEnum):
             return Style()
         elif type == CodeAnalysisType.STRUCT:
             return Struct()
+        elif type == CodeAnalysisType.REDUNDANCY:
+            return Redundancy()
         elif type == CodeAnalysisType.ALGORITHM:
             return Algorithm()
         elif type == CodeAnalysisType.COMPLEXITY:
