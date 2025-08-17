@@ -2,7 +2,6 @@ from code_insight.code_analysis.algorithm import Algorithm, AlgorithmAnalysisRes
 
 
 def test_algorithm_normal() -> None:
-
     # Arrange
     source_code = (
         "def factorial(n):\n"
@@ -40,7 +39,6 @@ def test_algorithm_normal() -> None:
 
 
 def test_algorithm_empty() -> None:
-
     # Arrange
     source_code = ""
 
@@ -61,7 +59,6 @@ def test_algorithm_empty() -> None:
 
 
 def test_algorithm_complex_recursion() -> None:
-
     # Arrange
     source_code = (
         "def fibonacci(n):\n"
@@ -92,7 +89,6 @@ def test_algorithm_complex_recursion() -> None:
 
 
 def test_algorithm_functional_programming() -> None:
-
     # Arrange
     source_code = (
         "from functools import reduce\n"
@@ -121,7 +117,6 @@ def test_algorithm_functional_programming() -> None:
 
 
 def test_algorithm_control_structures() -> None:
-
     # Arrange
     source_code = (
         "def complex_function(data):\n"

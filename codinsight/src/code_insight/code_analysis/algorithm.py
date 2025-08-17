@@ -91,9 +91,11 @@ class Algorithm(AbstractAnalysis[AlgorithmAnalysisResult]):
         for node in ast.walk(tree):
             if isinstance(node, ast.FunctionDef):
                 for call_node in ast.walk(node):
-                    if (isinstance(call_node, ast.Call) and 
-                        isinstance(call_node.func, ast.Name) and
-                        call_node.func.id == node.name):
+                    if (
+                        isinstance(call_node, ast.Call)
+                        and isinstance(call_node.func, ast.Name)
+                        and call_node.func.id == node.name
+                    ):
                         recursive_functions.add(node.name)
 
         if function_names:
@@ -108,39 +110,45 @@ class Algorithm(AbstractAnalysis[AlgorithmAnalysisResult]):
     def get_comprehension_count(self, source_code: str) -> int:
         """内包表記の数を取得"""
         tree = self.parse_source_code(source_code)
-        return sum(isinstance(node, (ast.ListComp, ast.SetComp, ast.DictComp, ast.GeneratorExp)) 
-                  for node in ast.walk(tree))
+        return sum(
+            isinstance(
+                node, (ast.ListComp, ast.SetComp, ast.DictComp, ast.GeneratorExp)
+            )
+            for node in ast.walk(tree)
+        )
 
     def get_functional_call_count(self, source_code: str) -> int:
         """map/filter/reduce呼び出しの数を取得"""
         tree = self.parse_source_code(source_code)
-        functional_names = {'map', 'filter', 'reduce'}
+        functional_names = {"map", "filter", "reduce"}
         count = 0
-        
+
         for node in ast.walk(tree):
-            if (isinstance(node, ast.Call) and 
-                isinstance(node.func, ast.Name) and
-                node.func.id in functional_names):
+            if (
+                isinstance(node, ast.Call)
+                and isinstance(node.func, ast.Name)
+                and node.func.id in functional_names
+            ):
                 count += 1
-        
+
         return count
 
     def get_cyclomatic_complexity(self, source_code: str) -> float:
         """循環的複雑度の平均を取得"""
         tree = self.parse_source_code(source_code)
         complexities = []
-        
+
         for node in ast.walk(tree):
             if isinstance(node, ast.FunctionDef):
                 complexity = self._calculate_function_complexity(node)
                 complexities.append(complexity)
-        
+
         return sum(complexities) / len(complexities) if complexities else 0.0
 
     def _calculate_function_complexity(self, func_node: ast.FunctionDef) -> int:
         """関数の循環的複雑度を計算"""
         complexity = 1
-        
+
         for node in ast.walk(func_node):
             if isinstance(node, (ast.If, ast.While, ast.For, ast.AsyncFor)):
                 complexity += 1
@@ -148,23 +156,34 @@ class Algorithm(AbstractAnalysis[AlgorithmAnalysisResult]):
                 complexity += len(node.handlers)
             elif isinstance(node, ast.BoolOp):
                 complexity += len(node.values) - 1
-        
+
         return complexity
 
     def get_max_nesting_depth(self, source_code: str) -> int:
         """制御構文の最大ネスト深度を取得"""
         tree = self.parse_source_code(source_code)
         max_depth = 0
-        
+
         def calculate_depth(node: ast.AST, current_depth: int = 0) -> None:
             nonlocal max_depth
-            
-            if isinstance(node, (ast.If, ast.For, ast.AsyncFor, ast.While, ast.Try, ast.With, ast.AsyncWith)):
+
+            if isinstance(
+                node,
+                (
+                    ast.If,
+                    ast.For,
+                    ast.AsyncFor,
+                    ast.While,
+                    ast.Try,
+                    ast.With,
+                    ast.AsyncWith,
+                ),
+            ):
                 current_depth += 1
                 max_depth = max(max_depth, current_depth)
-            
+
             for child in ast.iter_child_nodes(node):
                 calculate_depth(child, current_depth)
-        
+
         calculate_depth(tree)
         return max_depth

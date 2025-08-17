@@ -1,3 +1,4 @@
+from .code_analysis.algorithm import Algorithm, AlgorithmAnalysisResult
 from .code_analysis.struct import Struct, StructAnalysisResult
 from .code_analysis.style import Style, StyleAnalysisResult
 from .core import CodeAnalysis
@@ -9,5 +10,7 @@ __all__ = [
     "StyleAnalysisResult",
     "Struct",
     "StructAnalysisResult",
+    "Algorithm",
+    "AlgorithmAnalysisResult",
     "TrendAnalysis",
 ]
