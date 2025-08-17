@@ -1,7 +1,18 @@
 import ast
-from typing import Set
+from typing import Optional, Set
 
-from code_insight.code_analysis.abstract import AbstractAnalysis, BaseAnalysisResult
+from code_insight.code_analysis.abstract import (
+    AbstractAnalysis,
+    BaseAnalysisConfig,
+    BaseAnalysisResult,
+)
+
+
+class AlgorithmAnalysisConfig(BaseAnalysisConfig):
+    """アルゴリズム解析設定"""
+
+    max_nesting_depth_threshold: int = 4
+    cyclomatic_complexity_threshold: float = 5.0
 
 
 class AlgorithmAnalysisResult(BaseAnalysisResult):
@@ -36,11 +47,33 @@ class AlgorithmAnalysisResult(BaseAnalysisResult):
     max_nesting_depth: int
 
 
-class Algorithm(AbstractAnalysis[AlgorithmAnalysisResult]):
+class Algorithm(AbstractAnalysis[AlgorithmAnalysisResult, AlgorithmAnalysisConfig]):
     """解析クラス(アルゴリズム)"""
+
+    def __init__(self, config: Optional[AlgorithmAnalysisConfig] = None) -> None:
+        """コンストラクタ"""
+        super().__init__(config)
+
+    def get_default_config(self) -> AlgorithmAnalysisConfig:
+        """デフォルト設定を取得"""
+        return AlgorithmAnalysisConfig()
 
     def analyze(self, source_code: str) -> AlgorithmAnalysisResult:
         """コード解析"""
+        if not self.config.enabled:
+            return AlgorithmAnalysisResult(
+                if_count=0,
+                for_count=0,
+                while_count=0,
+                try_count=0,
+                recursion_rate=0.0,
+                lambda_count=0,
+                comprehension_count=0,
+                functional_call_count=0,
+                cyclomatic_complexity=0.0,
+                max_nesting_depth=0,
+            )
+
         return AlgorithmAnalysisResult(
             if_count=self.get_if_count(source_code),
             for_count=self.get_for_count(source_code),

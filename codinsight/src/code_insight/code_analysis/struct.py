@@ -2,8 +2,20 @@ import ast
 import itertools
 from collections import defaultdict
 from enum import StrEnum
+from typing import Optional
 
-from code_insight.code_analysis.abstract import AbstractAnalysis, BaseAnalysisResult
+from code_insight.code_analysis.abstract import (
+    AbstractAnalysis,
+    BaseAnalysisConfig,
+    BaseAnalysisResult,
+)
+
+
+class StructAnalysisConfig(BaseAnalysisConfig):
+    """構造解析設定"""
+
+    max_inheritance_depth: int = 5
+    max_class_methods: int = 20
 
 
 class DecoratorType(StrEnum):
@@ -65,11 +77,40 @@ class StructAnalysisResult(BaseAnalysisResult):
     subclass_count: float
 
 
-class Struct(AbstractAnalysis[StructAnalysisResult]):
+class Struct(AbstractAnalysis[StructAnalysisResult, StructAnalysisConfig]):
     """解析クラス(構造)"""
+
+    def __init__(self, config: Optional[StructAnalysisConfig] = None) -> None:
+        """コンストラクタ"""
+        super().__init__(config)
+
+    def get_default_config(self) -> StructAnalysisConfig:
+        """デフォルト設定を取得"""
+        return StructAnalysisConfig()
 
     def analyze(self, source_code: str) -> StructAnalysisResult:
         """コード解析"""
+        if not self.config.enabled:
+            return StructAnalysisResult(
+                function_count=0,
+                class_count=0,
+                line_count=0,
+                argument_count=0.0,
+                return_type_hint=0.0,
+                staticmethod_rate=0.0,
+                class_method_rate=0.0,
+                abstractmethod_rate=0.0,
+                property_rate=0.0,
+                method_count=0.0,
+                attribute_count=0.0,
+                public_rate=0.0,
+                private_rate=0.0,
+                dependency=0.0,
+                cohesion=0.0,
+                inheritance_depth=0.0,
+                subclass_count=0.0,
+            )
+
         (
             method_count,
             attribute_count,
