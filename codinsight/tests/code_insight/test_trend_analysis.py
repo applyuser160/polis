@@ -1,3 +1,5 @@
+import os
+
 import numpy as np
 
 from code_insight.code_analysis.abstract import BaseAnalysisResult
@@ -71,9 +73,9 @@ def test_trend_analysis_normal() -> None:
     trend_analysis = TrendAnalysis(code_analysis_results)
 
     # Assert
-    assert len(trend_analysis.code_analysis) == 2
-    assert "function_count" in trend_analysis.code_analysis[0]
-    assert "naming_convention" in trend_analysis.code_analysis[0]
+    assert len(trend_analysis.code_analysis_list) == 2
+    assert "function_count" in trend_analysis.code_analysis_list[0]
+    assert "naming_convention" in trend_analysis.code_analysis_list[0]
 
 
 def test_trend_analysis_extract_value() -> None:
@@ -235,4 +237,60 @@ def test_trend_analysis_empty() -> None:
     trend_analysis = TrendAnalysis(code_analysis_results)
 
     # Assert
-    assert len(trend_analysis.code_analysis) == 0
+    assert len(trend_analysis.code_analysis_list) == 0
+
+
+def test_trend_analysis_output_image() -> None:
+    # テスト観点: グラフ描画
+
+    # Arrange
+    struct_result1 = StructAnalysisResult(
+        function_count=2,
+        class_count=1,
+        line_count=5,
+        argument_count=1.0,
+        return_type_hint=0.5,
+        staticmethod_rate=0.0,
+        class_method_rate=0.0,
+        abstractmethod_rate=0.0,
+        property_rate=0.0,
+        method_count=1.0,
+        attribute_count=1.0,
+        public_rate=1.0,
+        private_rate=0.0,
+        dependency=0.5,
+        cohesion=1.0,
+        inheritance_depth=0.0,
+        subclass_count=0.0,
+    )
+    struct_result2 = StructAnalysisResult(
+        function_count=3,
+        class_count=2,
+        line_count=8,
+        argument_count=1.5,
+        return_type_hint=0.7,
+        staticmethod_rate=0.1,
+        class_method_rate=0.0,
+        abstractmethod_rate=0.0,
+        property_rate=0.0,
+        method_count=2.0,
+        attribute_count=2.0,
+        public_rate=0.8,
+        private_rate=0.2,
+        dependency=0.3,
+        cohesion=0.9,
+        inheritance_depth=1.0,
+        subclass_count=1.0,
+    )
+
+    code_analysis_results = [[struct_result1], [struct_result2]]
+    trend_analysis = TrendAnalysis(
+        code_analysis_results=code_analysis_results,
+        code_labels=["struct_result1", "struct_result2"],
+    )
+
+    # Act
+    trend_analysis.output_image()
+
+    # Assert
+    assert os.path.exists("clusters.png")
