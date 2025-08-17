@@ -1,3 +1,4 @@
+from .code_analysis.redundancy import Redundancy, RedundancyAnalysisResult
 from .code_analysis.struct import Struct, StructAnalysisResult
 from .code_analysis.style import Style, StyleAnalysisResult
 from .core import CodeAnalysis
@@ -9,5 +10,7 @@ __all__ = [
     "StyleAnalysisResult",
     "Struct",
     "StructAnalysisResult",
+    "Redundancy",
+    "RedundancyAnalysisResult",
     "TrendAnalysis",
 ]

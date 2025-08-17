@@ -1,11 +1,10 @@
 import ast
 import hashlib
 from collections import defaultdict
-from typing import Any, Dict, List, Set
+from typing import Dict, List, Set
 
 from radon.complexity import cc_visit
 from radon.metrics import mi_visit
-from radon.raw import analyze
 
 from code_insight.code_analysis.abstract import AbstractAnalysis, BaseAnalysisResult
 
@@ -68,7 +67,9 @@ class Redundancy(AbstractAnalysis[RedundancyAnalysisResult]):
             return 0.0
 
         duplicate_functions = sum(
-            len(functions) - 1 for functions in function_hashes.values() if len(functions) > 1
+            len(functions) - 1
+            for functions in function_hashes.values()
+            if len(functions) > 1
         )
 
         return duplicate_functions / total_functions
@@ -111,17 +112,19 @@ class Redundancy(AbstractAnalysis[RedundancyAnalysisResult]):
 
         try:
             complexity_results = cc_visit(source_code)
-            complexity_map = {result.name: result.complexity for result in complexity_results}
+            complexity_map = {
+                result.name: result.complexity for result in complexity_results
+            }
         except Exception:
             complexity_map = {}
 
         for node in ast.walk(tree):
             if isinstance(node, ast.FunctionDef):
                 total_functions += 1
-                
+
                 func_lines = self._count_function_lines(node, source_code)
                 func_complexity = complexity_map.get(node.name, 1)
-                
+
                 if func_lines >= 50 or func_complexity >= 10:
                     long_functions += 1
 
@@ -163,15 +166,23 @@ class Redundancy(AbstractAnalysis[RedundancyAnalysisResult]):
     def _get_function_structure_hash(self, func_node: ast.FunctionDef) -> str:
         """関数の構造的ハッシュを取得"""
         structure_elements = []
-        
+
         for node in ast.walk(func_node):
             if isinstance(node, (ast.If, ast.For, ast.While, ast.Try, ast.With)):
                 structure_elements.append(type(node).__name__)
             elif isinstance(node, ast.Return):
                 if isinstance(node.value, ast.Constant):
-                    structure_elements.append(f"return_const_{type(node.value.value).__name__}_{node.value.value}")
+                    node_value = node.value.value
+                    if isinstance(node_value, bytes):
+                        node_value = node_value.decode()
+                    structure_elements.append(
+                        f"return_const_{type(node.value.value).__name__}_"
+                        f"{node_value}"
+                    )
                 elif isinstance(node.value, ast.BinOp):
-                    structure_elements.append(f"return_binop_{type(node.value.op).__name__}")
+                    structure_elements.append(
+                        f"return_binop_{type(node.value.op).__name__}"
+                    )
                 else:
                     structure_elements.append("return_other")
             elif isinstance(node, ast.Assign):
@@ -181,25 +192,27 @@ class Redundancy(AbstractAnalysis[RedundancyAnalysisResult]):
 
         arg_count = len(func_node.args.args)
         structure_elements.append(f"args_{arg_count}")
-        
+
         if len(structure_elements) < 3:
             structure_elements.append(f"simple_{len(func_node.body)}")
-        
-        structure_str = "_".join(structure_elements)
-        return hashlib.md5(structure_str.encode()).hexdigest()
 
-    def _count_function_lines(self, func_node: ast.FunctionDef, source_code: str) -> int:
+        structure_str = "_".join(structure_elements)
+        return hashlib.md5(structure_str.encode(), usedforsecurity=False).hexdigest()
+
+    def _count_function_lines(
+        self, func_node: ast.FunctionDef, source_code: str
+    ) -> int:
         """関数の行数をカウント"""
-        if hasattr(func_node, 'end_lineno') and func_node.end_lineno:
+        if hasattr(func_node, "end_lineno") and func_node.end_lineno:
             return func_node.end_lineno - func_node.lineno + 1
-        
+
         lines = source_code.splitlines()
         if func_node.lineno <= len(lines):
             func_start = func_node.lineno - 1
             for i in range(func_start + 1, len(lines)):
                 line = lines[i].strip()
-                if line and not line.startswith(' ') and not line.startswith('\t'):
+                if line and not line.startswith(" ") and not line.startswith("\t"):
                     return i - func_start
             return len(lines) - func_start
-        
+
         return 1
