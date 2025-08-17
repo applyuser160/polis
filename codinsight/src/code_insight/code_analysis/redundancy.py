@@ -1,7 +1,7 @@
 import ast
 import hashlib
 from collections import defaultdict
-from typing import Dict, List, Set
+from typing import Any, Dict, List, Set
 
 from radon.complexity import cc_visit
 from radon.metrics import mi_visit
@@ -154,7 +154,9 @@ class Redundancy(AbstractAnalysis[RedundancyAnalysisResult]):
             return 0.0
 
         try:
-            mi_results = mi_visit(source_code, multi=True)
+            mi_results: list[Any] = mi_visit(
+                source_code, multi=True
+            )  # pyright: ignore[reportAssignmentType]
             if not mi_results:
                 return 0.0
 
