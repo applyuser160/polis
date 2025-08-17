@@ -1,3 +1,4 @@
+from .code_analysis.readability import Readability, ReadabilityAnalysisResult
 from .code_analysis.redundancy import Redundancy, RedundancyAnalysisResult
 from .code_analysis.algorithm import Algorithm, AlgorithmAnalysisResult
 from .code_analysis.struct import Struct, StructAnalysisResult
@@ -8,6 +9,8 @@ from .trend_analysis.trend_analysis import TrendAnalysis
 
 __all__ = [
     "CodeAnalysis",
+    "Readability",
+    "ReadabilityAnalysisResult",
     "CodeAnalysisType",
     "Style",
     "StyleAnalysisResult",
