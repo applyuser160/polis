@@ -21,6 +21,8 @@ C = TypeVar("C", bound=BaseAnalysisConfig)
 class AbstractAnalysis(ABC, Generic[T, C]):
     """解析抽象クラス"""
 
+    config: C
+
     def __init__(self, config: Optional[C] = None) -> None:
         """コンストラクタ"""
         self.config = config or self.get_default_config()
