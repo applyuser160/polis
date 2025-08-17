@@ -303,6 +303,9 @@ class Struct(AbstractAnalysis[StructAnalysisResult]):
                 (calculate_depth(base) for base in inheritance[class_name]), default=0
             )
 
+        if not inheritance:
+            return 0, 0
+
         depth = sum(calculate_depth(class_name) for class_name in inheritance) / len(
             inheritance
         )
