@@ -74,9 +74,10 @@ class Style(AbstractAnalysis[StyleAnalysisResult]):
 
         doc_count = 0
         for node in ast.walk(tree):
-            if isinstance(node, (ast.FunctionDef, ast.ClassDef, ast.Module)):
-                if ast.get_docstring(node):
-                    doc_count += 1
+            if isinstance(
+                node, (ast.FunctionDef, ast.ClassDef, ast.Module)
+            ) and ast.get_docstring(node):
+                doc_count += 1
 
         if total_lines := self.get_total_lines(source_code):
             return doc_count / total_lines
