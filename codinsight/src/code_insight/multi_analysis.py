@@ -1,26 +1,28 @@
 from __future__ import annotations
 
-import json
 import os
-from dataclasses import dataclass
 from pathlib import Path
-from typing import Any, Iterable
+from typing import Any, Iterable, cast
 
 from pydantic import BaseModel
 
+from code_insight.code_analysis.abstract import BaseAnalysisResult
 from code_insight.core import CodeAnalysis, CodeAnalysisType
-
 
 DEFAULT_EXTS: set[str] = {".py"}
 DEFAULT_EXCLUDES: set[str] = {"node_modules", "target", ".git", ".venv", "__pycache__"}
 
 
 class FileAnalysisResult(BaseModel):
+    """単一ファイルの解析結果モデル"""
+
     path: str
     results: dict[str, dict[str, Any]]
 
 
 class AggregateStats(BaseModel):
+    """解析全体の集約統計モデル"""
+
     total_files: int
     analyzed_files: int
     errors: list[str]
@@ -28,10 +30,13 @@ class AggregateStats(BaseModel):
 
 
 class MultiAnalysisResult(BaseModel):
+    """複数ファイル解析の結果モデル"""
+
     files: list[FileAnalysisResult]
     aggregate: AggregateStats
 
     def to_json(self) -> str:
+        """JSON文字列へのシリアライズ"""
         return self.model_dump_json()
 
 
@@ -45,6 +50,7 @@ def collect_paths(
     exts: set[str] | None = None,
     excludes: set[str] | None = None,
 ) -> list[Path]:
+    """入力から解析対象ファイルパスを再帰収集"""
     exts = exts or DEFAULT_EXTS
     excludes = excludes or DEFAULT_EXCLUDES
 
@@ -74,16 +80,20 @@ def collect_paths(
 
 
 def analyze_file(path: Path, types: list[CodeAnalysisType]) -> FileAnalysisResult:
+    """単一ファイルを解析して結果を返却"""
     source_code = path.read_text(encoding="utf-8", errors="ignore")
     analysis = CodeAnalysis(source_code=source_code)
     result_map = analysis.analyze(types)
     as_dict: dict[str, dict[str, Any]] = {}
     for t, model in result_map.items():
-        as_dict[t.name] = model.model_dump()
+        m = cast(BaseAnalysisResult, model)
+        as_dict[t.name] = m.model_dump()
     return FileAnalysisResult(path=str(path), results=as_dict)
 
 
-def _aggregate_numeric_means(files: list[FileAnalysisResult]) -> dict[str, dict[str, float]]:
+def _aggregate_numeric_means(
+    files: list[FileAnalysisResult],
+) -> dict[str, dict[str, float]]:
     by_type: dict[str, dict[str, list[float]]] = {}
 
     for fa in files:
@@ -104,10 +114,15 @@ def _aggregate_numeric_means(files: list[FileAnalysisResult]) -> dict[str, dict[
 
 
 class MultiFileAnalyzer:
+    """複数ファイル解析の管理クラス"""
+
     exts: set[str]
     excludes: set[str]
 
-    def __init__(self, exts: set[str] | None = None, excludes: set[str] | None = None) -> None:
+    def __init__(
+        self, exts: set[str] | None = None, excludes: set[str] | None = None
+    ) -> None:
+        """コンストラクタ"""
         self.exts = exts or DEFAULT_EXTS
         self.excludes = excludes or DEFAULT_EXCLUDES
 
@@ -116,6 +131,7 @@ class MultiFileAnalyzer:
         inputs: list[str],
         types: list[CodeAnalysisType],
     ) -> MultiAnalysisResult:
+        """入力パス群を解析して結果を返却"""
         paths = collect_paths(inputs=inputs, exts=self.exts, excludes=self.excludes)
         files: list[FileAnalysisResult] = []
         errors: list[str] = []
@@ -141,5 +157,6 @@ def analyze_paths(
     exts: set[str] | None = None,
     excludes: set[str] | None = None,
 ) -> MultiAnalysisResult:
+    """関数APIによる複数ファイル解析の実行"""
     analyzer = MultiFileAnalyzer(exts=exts, excludes=excludes)
     return analyzer.analyze(inputs=inputs, types=types)

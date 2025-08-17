@@ -1,10 +1,7 @@
 from pathlib import Path
 
 from code_insight.core import CodeAnalysisType
-from code_insight.multi_analysis import (
-    MultiFileAnalyzer,
-    analyze_paths,
-)
+from code_insight.multi_analysis import MultiFileAnalyzer, analyze_paths
 
 
 def write(p: Path, content: str) -> None:
@@ -13,12 +10,7 @@ def write(p: Path, content: str) -> None:
 
 
 def simple_py(i: int = 0) -> str:
-    return (
-        "def foo():\n"
-        "    '''doc'''\n"
-        "    # comment\n"
-        f"    return {i}\n"
-    )
+    return "def foo():\n" "    '''doc'''\n" "    # comment\n" f"    return {i}\n"
 
 
 def test_directory_recursive_and_filter_and_exclude(tmp_path: Path) -> None:
