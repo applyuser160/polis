@@ -3,7 +3,6 @@ from code_insight.core import CodeAnalysis, CodeAnalysisType
 
 
 def test_core_readability_only() -> None:
-
     # Arrange
     source_code = (
         "def calculate_something_complex(parameter_with_long_name):\n"
@@ -23,7 +22,6 @@ def test_core_readability_only() -> None:
 
 
 def test_core_all_analysis_types() -> None:
-
     # Arrange
     source_code = (
         "class MyClass:\n"
@@ -38,7 +36,9 @@ def test_core_all_analysis_types() -> None:
     code_analysis = CodeAnalysis(source_code=source_code)
 
     # Act
-    result = code_analysis.analyze([CodeAnalysisType.STYLE, CodeAnalysisType.STRUCT, CodeAnalysisType.READABILITY])
+    result = code_analysis.analyze(
+        [CodeAnalysisType.STYLE, CodeAnalysisType.STRUCT, CodeAnalysisType.READABILITY]
+    )
 
     # Assert
     assert len(result) == 3

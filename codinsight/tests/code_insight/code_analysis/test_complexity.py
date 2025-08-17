@@ -2,7 +2,6 @@ from code_insight.code_analysis.complexity import Complexity, ComplexityAnalysis
 
 
 def test_complexity_normal() -> None:
-
     # Arrange
     source_code = (
         "def factorial(n):\n"
@@ -32,7 +31,6 @@ def test_complexity_normal() -> None:
 
 
 def test_complexity_empty() -> None:
-
     # Arrange
     source_code = ""
 
@@ -51,12 +49,8 @@ def test_complexity_empty() -> None:
 
 
 def test_complexity_simple_function() -> None:
-
     # Arrange
-    source_code = (
-        "def simple_function(x):\n"
-        "    return x * 2\n"
-    )
+    source_code = "def simple_function(x):\n" "    return x * 2\n"
 
     # Act
     result: ComplexityAnalysisResult = Complexity().analyze(source_code=source_code)
@@ -70,7 +64,6 @@ def test_complexity_simple_function() -> None:
 
 
 def test_complexity_nested_structure() -> None:
-
     # Arrange
     source_code = (
         "def complex_function(data):\n"

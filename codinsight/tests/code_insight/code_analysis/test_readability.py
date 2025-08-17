@@ -1,15 +1,18 @@
-from code_insight.code_analysis.readability import Readability, ReadabilityAnalysisResult
+from code_insight.code_analysis.readability import (
+    Readability,
+    ReadabilityAnalysisResult,
+)
 
 
 def test_readability_normal() -> None:
-
     # Arrange
     source_code = (
         "class MyClass:\n"
         "    def __init__(self):\n"
         "        self.very_long_variable_name = 1\n"
         "        self.x = 2\n"
-        "    def calculate_something_complex(self, parameter_with_long_name: int) -> int:\n"
+        "    def calculate_something_complex(\n"
+        "        self, parameter_with_long_name: int) -> int:\n"
         "        if parameter_with_long_name > 0:\n"
         "            if parameter_with_long_name > 10:\n"
         "                return parameter_with_long_name * 2\n"
@@ -34,7 +37,6 @@ def test_readability_normal() -> None:
 
 
 def test_readability_empty() -> None:
-
     # Arrange
     source_code = ""
 
@@ -54,7 +56,6 @@ def test_readability_empty() -> None:
 
 
 def test_readability_simple_code() -> None:
-
     # Arrange
     source_code = (
         "def add(a, b):\n"

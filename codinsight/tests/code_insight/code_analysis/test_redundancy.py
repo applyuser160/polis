@@ -2,7 +2,6 @@ from code_insight.code_analysis.redundancy import Redundancy, RedundancyAnalysis
 
 
 def test_redundancy_normal() -> None:
-
     # Arrange
     source_code = (
         "def duplicate_function_1(x):\n"
@@ -32,11 +31,16 @@ def test_redundancy_normal() -> None:
         "                                if h > 0:\n"
         "                                    if i > 0:\n"
         "                                        if j > 0:\n"
-        "                                            result = a + b + c + d + e + f + g + h + i + j\n"
+        "                                            result = (\n"
+        "                                                a + b + c + d + \\\n"
+        "                                                e + f + g + h + i + j\n"
+        "                                            )\n"
         "                                        else:\n"
-        "                                            result = a + b + c + d + e + f + g + h + i\n"
+        "                                            result = a + b + c + \\\n"
+        "                                                d + e + f + g + h + i\n"
         "                                    else:\n"
-        "                                        result = a + b + c + d + e + f + g + h\n"
+        "                                        result = a + b + c + \\\n"
+        "                                            d + e + f + g + h\n"
         "                                else:\n"
         "                                    result = a + b + c + d + e + f + g\n"
         "                            else:\n"
@@ -75,7 +79,6 @@ def test_redundancy_normal() -> None:
 
 
 def test_redundancy_empty() -> None:
-
     # Arrange
     source_code = ""
 
@@ -91,7 +94,6 @@ def test_redundancy_empty() -> None:
 
 
 def test_redundancy_no_duplicates() -> None:
-
     # Arrange
     source_code = (
         "def function_a():\n"
@@ -114,7 +116,6 @@ def test_redundancy_no_duplicates() -> None:
 
 
 def test_redundancy_all_unused() -> None:
-
     # Arrange
     source_code = (
         "def unused_function_1():\n"

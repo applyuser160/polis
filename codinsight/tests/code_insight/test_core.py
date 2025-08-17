@@ -21,7 +21,9 @@ def test_core_normal() -> None:
     code_analysis = CodeAnalysis(source_code=source_code)
 
     # Act
-    result = code_analysis.analyze([CodeAnalysisType.STYLE, CodeAnalysisType.STRUCT, CodeAnalysisType.READABILITY])
+    result = code_analysis.analyze(
+        [CodeAnalysisType.STYLE, CodeAnalysisType.STRUCT, CodeAnalysisType.READABILITY]
+    )
 
     # Assert
     assert len(result) == 3

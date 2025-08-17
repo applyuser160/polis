@@ -1,13 +1,9 @@
 import ast
-from typing import Any
 
 import radon.complexity as cc
 import radon.metrics as metrics
 
-from code_insight.code_analysis.abstract import (
-    AbstractAnalysis,
-    BaseAnalysisResult,
-)
+from code_insight.code_analysis.abstract import AbstractAnalysis, BaseAnalysisResult
 
 
 class ComplexityAnalysisResult(BaseAnalysisResult):
@@ -122,8 +118,15 @@ class Complexity(AbstractAnalysis[ComplexityAnalysisResult]):
                 nonlocal max_depth
 
                 nesting_nodes = (
-                    ast.If, ast.For, ast.While, ast.With, ast.Try,
-                    ast.FunctionDef, ast.ClassDef, ast.AsyncFor, ast.AsyncWith
+                    ast.If,
+                    ast.For,
+                    ast.While,
+                    ast.With,
+                    ast.Try,
+                    ast.FunctionDef,
+                    ast.ClassDef,
+                    ast.AsyncFor,
+                    ast.AsyncWith,
                 )
 
                 if isinstance(node, nesting_nodes):
@@ -187,8 +190,12 @@ class Complexity(AbstractAnalysis[ComplexityAnalysisResult]):
                     complexity += len(node.values) - 1
 
                 nesting_increment_nodes = (
-                    ast.If, ast.For, ast.While, ast.Try,
-                    ast.FunctionDef, ast.AsyncFunctionDef
+                    ast.If,
+                    ast.For,
+                    ast.While,
+                    ast.Try,
+                    ast.FunctionDef,
+                    ast.AsyncFunctionDef,
                 )
 
                 new_nesting_level = nesting_level
