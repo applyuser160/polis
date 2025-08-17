@@ -5,6 +5,7 @@ from code_insight.code_analysis.abstract import AbstractAnalysis, BaseAnalysisRe
 from code_insight.code_analysis.algorithm import Algorithm
 from code_insight.code_analysis.struct import Struct
 from code_insight.code_analysis.style import Style
+from code_insight.code_analysis.complexity import Complexity
 
 
 class CodeAnalysisType(StrEnum):
@@ -22,6 +23,7 @@ class CodeAnalysisType(StrEnum):
     STYLE = auto()
     STRUCT = auto()
     ALGORITHM = auto()
+    COMPLEXITY = auto()
 
     @staticmethod
     def get_code_analysis_class(type: str) -> AbstractAnalysis[Any]:
@@ -32,6 +34,8 @@ class CodeAnalysisType(StrEnum):
             return Struct()
         elif type == CodeAnalysisType.ALGORITHM:
             return Algorithm()
+        elif type == CodeAnalysisType.COMPLEXITY:
+            return Complexity()
         else:
             raise ValueError(f"Invalid code analysis type: {type}")
 
