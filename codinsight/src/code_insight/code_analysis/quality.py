@@ -112,7 +112,7 @@ class Quality(AbstractAnalysis[QualityAnalysisResult]):
         if total == 0:
             return 0.0
 
-        with_doc = sum(1 for t in targets if ast.get_docstring(t))
+        with_doc = sum(True for t in targets if ast.get_docstring(t))  # type: ignore
         return with_doc / total
 
     def get_exception_handling_rate(self, source_code: str) -> float:
@@ -185,9 +185,9 @@ class Quality(AbstractAnalysis[QualityAnalysisResult]):
     def get_todo_comment_rate(self, source_code: str) -> float:
         """TODOコメント率を取得"""
         lines = source_code.splitlines()
-        non_empty = [l for l in lines if l.strip()]
-        if not non_empty:
+        non_empty_lines = [line for line in lines if line.strip()]
+        if not non_empty_lines:
             return 0.0
         todo_re = re.compile(r"\b(TODO|FIXME)\b", re.IGNORECASE)
-        todo_lines = sum(1 for l in non_empty if todo_re.search(l))
-        return todo_lines / len(non_empty)
+        todo_lines = sum(1 for line in non_empty_lines if todo_re.search(line))
+        return todo_lines / len(non_empty_lines)

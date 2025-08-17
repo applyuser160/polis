@@ -47,8 +47,8 @@ def test_quality_normal() -> None:
     assert result.avg_function_length == 4.5
     assert result.long_parameter_function_rate == 0.5
     assert result.assert_count == 1
-    non_empty = [l for l in source_code.splitlines() if l.strip()]
-    expected_todo = sum(1 for l in non_empty if ("TODO" in l or "FIXME" in l)) / len(
-        non_empty
-    )
+    non_empty_lines = [line for line in source_code.splitlines() if line.strip()]
+    expected_todo = sum(
+        1 for line in non_empty_lines if ("TODO" in line or "FIXME" in line)
+    ) / len(non_empty_lines)
     assert result.todo_comment_rate == expected_todo

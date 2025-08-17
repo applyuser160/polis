@@ -1,5 +1,6 @@
 from .code_analysis.algorithm import Algorithm, AlgorithmAnalysisResult
 from .code_analysis.complexity import Complexity, ComplexityAnalysisResult
+from .code_analysis.quality import Quality, QualityAnalysisResult
 from .code_analysis.readability import Readability, ReadabilityAnalysisResult
 from .code_analysis.redundancy import Redundancy, RedundancyAnalysisResult
 from .code_analysis.struct import Struct, StructAnalysisResult
@@ -22,5 +23,7 @@ __all__ = [
     "AlgorithmAnalysisResult",
     "Complexity",
     "ComplexityAnalysisResult",
+    "Quality",
+    "QualityAnalysisResult",
     "TrendAnalysis",
 ]

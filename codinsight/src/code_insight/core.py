@@ -4,11 +4,11 @@ from typing import Any, Type
 from code_insight.code_analysis.abstract import AbstractAnalysis, BaseAnalysisResult
 from code_insight.code_analysis.algorithm import Algorithm
 from code_insight.code_analysis.complexity import Complexity
+from code_insight.code_analysis.quality import Quality
 from code_insight.code_analysis.readability import Readability
 from code_insight.code_analysis.redundancy import Redundancy
 from code_insight.code_analysis.struct import Struct
 from code_insight.code_analysis.style import Style
-from code_insight.code_analysis.quality import Quality
 
 
 class CodeAnalysisType(StrEnum):
