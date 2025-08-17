@@ -6,13 +6,16 @@ from .code_analysis.redundancy import Redundancy, RedundancyAnalysisResult
 from .code_analysis.struct import Struct, StructAnalysisResult
 from .code_analysis.style import Style, StyleAnalysisResult
 from .core import CodeAnalysis, CodeAnalysisType
+from .multi_analysis import MultiAnalysisResult, MultiFileAnalyzer
 from .trend_analysis.trend_analysis import TrendAnalysis
 
 __all__ = [
     "CodeAnalysis",
+    "CodeAnalysisType",
+    "MultiFileAnalyzer",
+    "MultiAnalysisResult",
     "Readability",
     "ReadabilityAnalysisResult",
-    "CodeAnalysisType",
     "Style",
     "StyleAnalysisResult",
     "Struct",
