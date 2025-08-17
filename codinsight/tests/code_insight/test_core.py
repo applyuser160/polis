@@ -17,8 +17,7 @@ def test_core_normal() -> None:
         "    # comment\n"
         "    pass\n"
     )
-    code_analysis = CodeAnalysis()
-    code_analysis.source_code = source_code
+    code_analysis = CodeAnalysis(source_code=source_code)
 
     # Act
     result = code_analysis.analyze([CodeAnalysisType.STYLE, CodeAnalysisType.STRUCT])
@@ -36,8 +35,7 @@ def test_core_empty() -> None:
 
     # Arrange
     source_code = ""
-    code_analysis = CodeAnalysis()
-    code_analysis.source_code = source_code
+    code_analysis = CodeAnalysis(source_code=source_code)
 
     # Act
     result = code_analysis.analyze([CodeAnalysisType.STYLE, CodeAnalysisType.STRUCT])
