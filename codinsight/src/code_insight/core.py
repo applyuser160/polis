@@ -36,6 +36,10 @@ class CodeAnalysis:
 
     source_code: str
 
+    def __init__(self, source_code: str) -> None:
+        """コンストラクタ"""
+        self.source_code = source_code
+
     def analyze(
         self, types: list[CodeAnalysisType]
     ) -> dict[CodeAnalysisType, Type[BaseAnalysisResult]]:
