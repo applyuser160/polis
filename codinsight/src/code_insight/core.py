@@ -3,8 +3,10 @@ from typing import Any, Type
 
 from code_insight.code_analysis.abstract import AbstractAnalysis, BaseAnalysisResult
 from code_insight.code_analysis.redundancy import Redundancy
+from code_insight.code_analysis.algorithm import Algorithm
 from code_insight.code_analysis.struct import Struct
 from code_insight.code_analysis.style import Style
+from code_insight.code_analysis.complexity import Complexity
 
 
 class CodeAnalysisType(StrEnum):
@@ -12,6 +14,7 @@ class CodeAnalysisType(StrEnum):
     コード解析タイプ
     * スタイル
     * 構造
+    * アルゴリズム
     * 複雑度
     * 冗長度
     * 可読性
@@ -21,6 +24,8 @@ class CodeAnalysisType(StrEnum):
     STYLE = auto()
     STRUCT = auto()
     REDUNDANCY = auto()
+    ALGORITHM = auto()
+    COMPLEXITY = auto()
 
     @staticmethod
     def get_code_analysis_class(type: str) -> AbstractAnalysis[Any]:
@@ -31,6 +36,10 @@ class CodeAnalysisType(StrEnum):
             return Struct()
         elif type == CodeAnalysisType.REDUNDANCY:
             return Redundancy()
+        elif type == CodeAnalysisType.ALGORITHM:
+            return Algorithm()
+        elif type == CodeAnalysisType.COMPLEXITY:
+            return Complexity()
         else:
             raise ValueError(f"Invalid code analysis type: {type}")
 
