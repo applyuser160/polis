@@ -1,12 +1,11 @@
 import ast
 import hashlib
 from collections import defaultdict
-from typing import Any, Dict, List, Set
+from typing import Dict, List, Set
 
 from radon.complexity import cc_visit
 
 from code_insight.code_analysis.abstract import AbstractAnalysis, BaseAnalysisResult
-from code_insight.code_analysis.complexity import Complexity
 
 
 class RedundancyAnalysisResult(BaseAnalysisResult):
@@ -27,9 +26,6 @@ class RedundancyAnalysisResult(BaseAnalysisResult):
 
 class Redundancy(AbstractAnalysis[RedundancyAnalysisResult]):
     """解析クラス(冗長度)"""
-
-    def __init__(self) -> None:
-        self._complexity = Complexity()
 
     def analyze(self, source_code: str) -> RedundancyAnalysisResult:
         """コード解析"""
@@ -127,7 +123,6 @@ class Redundancy(AbstractAnalysis[RedundancyAnalysisResult]):
             return 0.0
 
         return long_functions / total_functions
-
 
     def _get_function_structure_hash(self, func_node: ast.FunctionDef) -> str:
         """関数の構造的ハッシュを取得"""

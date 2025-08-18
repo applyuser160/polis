@@ -2,7 +2,6 @@ import ast
 from typing import Set
 
 from code_insight.code_analysis.abstract import AbstractAnalysis, BaseAnalysisResult
-from code_insight.code_analysis.complexity import Complexity
 
 
 class AlgorithmAnalysisResult(BaseAnalysisResult):
@@ -129,7 +128,6 @@ class Algorithm(AbstractAnalysis[AlgorithmAnalysisResult]):
                 count += 1
 
         return count
-
 
     def get_max_nesting_depth(self, source_code: str) -> int:
         """制御構文の最大ネスト深度を取得"""
