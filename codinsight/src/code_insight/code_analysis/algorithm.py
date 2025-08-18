@@ -33,8 +33,6 @@ class AlgorithmAnalysisResult(BaseAnalysisResult):
         * lambda式の数
         * リスト内包表記の数
         * map/filter/reduce呼び出しの数
-    * 循環的複雑度
-        * McCabe複雑度の平均
     * ネスト深度
         * 制御構文の最大ネスト深度
     """
@@ -47,7 +45,6 @@ class AlgorithmAnalysisResult(BaseAnalysisResult):
     lambda_count: int
     comprehension_count: int
     functional_call_count: int
-    cyclomatic_complexity: float
     max_nesting_depth: int
 
 
@@ -87,7 +84,6 @@ class Algorithm(AbstractAnalysis[AlgorithmAnalysisResult, AlgorithmAnalysisConfi
             lambda_count=self.get_lambda_count(source_code),
             comprehension_count=self.get_comprehension_count(source_code),
             functional_call_count=self.get_functional_call_count(source_code),
-            cyclomatic_complexity=self.get_cyclomatic_complexity(source_code),
             max_nesting_depth=self.get_max_nesting_depth(source_code),
         )
 
@@ -169,32 +165,6 @@ class Algorithm(AbstractAnalysis[AlgorithmAnalysisResult, AlgorithmAnalysisConfi
                 count += 1
 
         return count
-
-    def get_cyclomatic_complexity(self, source_code: str) -> float:
-        """循環的複雑度の平均を取得"""
-        tree = self.parse_source_code(source_code)
-        complexities = []
-
-        for node in ast.walk(tree):
-            if isinstance(node, ast.FunctionDef):
-                complexity = self._calculate_function_complexity(node)
-                complexities.append(complexity)
-
-        return sum(complexities) / len(complexities) if complexities else 0.0
-
-    def _calculate_function_complexity(self, func_node: ast.FunctionDef) -> int:
-        """関数の循環的複雑度を計算"""
-        complexity = 1
-
-        for node in ast.walk(func_node):
-            if isinstance(node, (ast.If, ast.While, ast.For, ast.AsyncFor)):
-                complexity += 1
-            elif isinstance(node, ast.Try):
-                complexity += len(node.handlers)
-            elif isinstance(node, ast.BoolOp):
-                complexity += len(node.values) - 1
-
-        return complexity
 
     def get_max_nesting_depth(self, source_code: str) -> int:
         """制御構文の最大ネスト深度を取得"""

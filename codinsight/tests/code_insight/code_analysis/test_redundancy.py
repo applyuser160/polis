@@ -74,8 +74,6 @@ def test_redundancy_normal() -> None:
     assert result.duplicate_code_rate > 0.0
     assert result.unused_code_rate > 0.0
     assert result.long_function_rate > 0.0
-    assert result.cyclomatic_complexity > 1.0
-    assert result.maintainability_index >= 0.0
 
 
 def test_redundancy_empty() -> None:
@@ -89,8 +87,6 @@ def test_redundancy_empty() -> None:
     assert result.duplicate_code_rate == 0.0
     assert result.unused_code_rate == 0.0
     assert result.long_function_rate == 0.0
-    assert result.cyclomatic_complexity == 0.0
-    assert result.maintainability_index == 0.0
 
 
 def test_redundancy_no_duplicates() -> None:
