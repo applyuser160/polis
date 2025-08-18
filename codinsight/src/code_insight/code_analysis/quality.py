@@ -1,4 +1,3 @@
-"""コード品質解析モジュール."""
 import ast
 import re
 
@@ -11,7 +10,7 @@ from code_insight.code_analysis.abstract import (
 
 class QualityAnalysisConfig(BaseAnalysisConfig):
     """
-    品質解析設定.
+    品質解析設定
 
     Attributes
     ----------
@@ -24,7 +23,7 @@ class QualityAnalysisConfig(BaseAnalysisConfig):
 
 class QualityAnalysisResult(BaseAnalysisResult):
     """
-    解析結果(品質).
+    解析結果(品質)
 
     Attributes
     ----------
@@ -55,7 +54,7 @@ class QualityAnalysisResult(BaseAnalysisResult):
 
 class Quality(AbstractAnalysis[QualityAnalysisResult, QualityAnalysisConfig]):
     """
-    解析クラス(品質).
+    解析クラス(品質)
 
     Notes
     -----
@@ -64,7 +63,7 @@ class Quality(AbstractAnalysis[QualityAnalysisResult, QualityAnalysisConfig]):
 
     def __init__(self, config: QualityAnalysisConfig | None = None) -> None:
         """
-        コンストラクタ.
+        コンストラクタ
 
         Parameters
         ----------
@@ -75,7 +74,7 @@ class Quality(AbstractAnalysis[QualityAnalysisResult, QualityAnalysisConfig]):
 
     def get_default_config(self) -> QualityAnalysisConfig:
         """
-        デフォルト設定を取得.
+        デフォルト設定を取得
 
         Returns
         -------
@@ -86,7 +85,7 @@ class Quality(AbstractAnalysis[QualityAnalysisResult, QualityAnalysisConfig]):
 
     def analyze(self, source_code: str) -> QualityAnalysisResult:
         """
-        コード解析.
+        コード解析
 
         Parameters
         ----------
@@ -124,7 +123,7 @@ class Quality(AbstractAnalysis[QualityAnalysisResult, QualityAnalysisConfig]):
 
     def parse_source_code(self, source_code: str) -> ast.AST:
         """
-        ソースコードを解析.
+        ソースコードを解析
 
         Parameters
         ----------
@@ -140,7 +139,7 @@ class Quality(AbstractAnalysis[QualityAnalysisResult, QualityAnalysisConfig]):
 
     def get_functions(self, tree: ast.AST) -> list[ast.FunctionDef]:
         """
-        関数定義を取得.
+        関数定義を取得
 
         Parameters
         ----------
@@ -158,7 +157,7 @@ class Quality(AbstractAnalysis[QualityAnalysisResult, QualityAnalysisConfig]):
         self, source_code: str, tree: ast.AST | None = None
     ) -> float:
         """
-        型ヒント網羅率を取得.
+        型ヒント網羅率を取得
 
         Parameters
         ----------
@@ -213,7 +212,7 @@ class Quality(AbstractAnalysis[QualityAnalysisResult, QualityAnalysisConfig]):
         self, source_code: str, tree: ast.AST | None = None
     ) -> float:
         """
-        docstringカバレッジを取得.
+        docstringカバレッジを取得
 
         Parameters
         ----------
@@ -246,7 +245,7 @@ class Quality(AbstractAnalysis[QualityAnalysisResult, QualityAnalysisConfig]):
         self, source_code: str, tree: ast.AST | None = None
     ) -> float:
         """
-        例外ハンドリング率を取得.
+        例外ハンドリング率を取得
 
         Parameters
         ----------
@@ -273,7 +272,7 @@ class Quality(AbstractAnalysis[QualityAnalysisResult, QualityAnalysisConfig]):
         self, func_node: ast.FunctionDef, source_code: str
     ) -> int:
         """
-        関数の行数をカウント.
+        関数の行数をカウント
 
         Parameters
         ----------
@@ -304,7 +303,7 @@ class Quality(AbstractAnalysis[QualityAnalysisResult, QualityAnalysisConfig]):
         self, source_code: str, tree: ast.AST | None = None
     ) -> float:
         """
-        平均関数行数を取得.
+        平均関数行数を取得
 
         Parameters
         ----------
@@ -331,7 +330,7 @@ class Quality(AbstractAnalysis[QualityAnalysisResult, QualityAnalysisConfig]):
         self, source_code: str, tree: ast.AST | None = None
     ) -> float:
         """
-        長引数関数割合を取得.
+        長引数関数割合を取得
 
         Parameters
         ----------
@@ -368,7 +367,7 @@ class Quality(AbstractAnalysis[QualityAnalysisResult, QualityAnalysisConfig]):
 
     def get_assert_count(self, source_code: str, tree: ast.AST | None = None) -> int:
         """
-        アサーション数を取得.
+        アサーション数を取得
 
         Parameters
         ----------
@@ -389,7 +388,7 @@ class Quality(AbstractAnalysis[QualityAnalysisResult, QualityAnalysisConfig]):
 
     def get_todo_comment_rate(self, source_code: str) -> float:
         """
-        TODOコメント率を取得.
+        TODOコメント率を取得
 
         Parameters
         ----------

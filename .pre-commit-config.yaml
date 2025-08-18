@@ -51,7 +51,10 @@ repos:
     rev: 6.3.0
     hooks:
       - id: pydocstyle
-        args: ["--convention=numpy"]
+        args: [
+          "--convention=numpy",
+          "--add-ignore=D100,D104,D400,D415"
+        ]
         language_version: python3
         files: ^codinsight/src/
 

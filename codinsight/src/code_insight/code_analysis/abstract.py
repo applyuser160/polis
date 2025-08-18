@@ -1,4 +1,3 @@
-"""解析の抽象基底クラスモジュール."""
 from abc import ABC, abstractmethod
 from typing import Generic, TypeVar
 
@@ -7,7 +6,7 @@ from pydantic import BaseModel
 
 class BaseAnalysisConfig(BaseModel):
     """
-    解析設定のベースクラス.
+    解析設定のベースクラス
 
     Attributes
     ----------
@@ -20,7 +19,7 @@ class BaseAnalysisConfig(BaseModel):
 
 class BaseAnalysisResult(BaseModel):
     """
-    解析結果のベースモデル.
+    解析結果のベースモデル
 
     Notes
     -----
@@ -34,7 +33,7 @@ C = TypeVar("C", bound=BaseAnalysisConfig)
 
 class AbstractAnalysis(ABC, Generic[R, C]):
     """
-    解析抽象クラス.
+    解析抽象クラス
 
     Parameters
     ----------
@@ -53,7 +52,7 @@ class AbstractAnalysis(ABC, Generic[R, C]):
 
     def __init__(self, config: C | None = None) -> None:
         """
-        コンストラクタ.
+        コンストラクタ
 
         Parameters
         ----------
@@ -65,7 +64,7 @@ class AbstractAnalysis(ABC, Generic[R, C]):
     @abstractmethod
     def get_default_config(self) -> C:
         """
-        デフォルト設定を取得.
+        デフォルト設定を取得
 
         Returns
         -------
@@ -77,7 +76,7 @@ class AbstractAnalysis(ABC, Generic[R, C]):
     @abstractmethod
     def analyze(self, source_code: str) -> R:
         """
-        コードを解析する.
+        コードを解析する
 
         Parameters
         ----------

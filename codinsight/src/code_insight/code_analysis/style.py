@@ -1,4 +1,3 @@
-"""コードスタイル解析モジュール."""
 import ast
 import re
 
@@ -13,7 +12,7 @@ from code_insight.code_analysis.abstract import (
 
 class StyleAnalysisConfig(BaseAnalysisConfig):
     """
-    スタイル解析設定.
+    スタイル解析設定
 
     Attributes
     ----------
@@ -29,7 +28,7 @@ class StyleAnalysisConfig(BaseAnalysisConfig):
 
 class StyleAnalysisResult(BaseAnalysisResult):
     """
-    解析結果(スタイル).
+    解析結果(スタイル)
 
     Attributes
     ----------
@@ -51,7 +50,7 @@ class StyleAnalysisResult(BaseAnalysisResult):
 
 class Style(AbstractAnalysis[StyleAnalysisResult, StyleAnalysisConfig]):
     """
-    解析クラス(スタイル).
+    解析クラス(スタイル)
 
     Notes
     -----
@@ -60,7 +59,7 @@ class Style(AbstractAnalysis[StyleAnalysisResult, StyleAnalysisConfig]):
 
     def __init__(self, config: StyleAnalysisConfig | None = None) -> None:
         """
-        コンストラクタ.
+        コンストラクタ
 
         Parameters
         ----------
@@ -71,7 +70,7 @@ class Style(AbstractAnalysis[StyleAnalysisResult, StyleAnalysisConfig]):
 
     def get_default_config(self) -> StyleAnalysisConfig:
         """
-        デフォルト設定を取得.
+        デフォルト設定を取得
 
         Returns
         -------
@@ -82,7 +81,7 @@ class Style(AbstractAnalysis[StyleAnalysisResult, StyleAnalysisConfig]):
 
     def analyze(self, source_code: str) -> StyleAnalysisResult:
         """
-        コード解析.
+        コード解析
 
         Parameters
         ----------
@@ -114,7 +113,7 @@ class Style(AbstractAnalysis[StyleAnalysisResult, StyleAnalysisConfig]):
         self, source_code: str, tree: ast.AST | None = None
     ) -> float:
         """
-        命名規則の一貫性を取得.
+        命名規則の一貫性を取得
 
         Parameters
         ----------
@@ -142,7 +141,7 @@ class Style(AbstractAnalysis[StyleAnalysisResult, StyleAnalysisConfig]):
 
     def get_total_lines(self, source_code: str) -> int:
         """
-        行数を取得.
+        行数を取得
 
         Parameters
         ----------
@@ -158,7 +157,7 @@ class Style(AbstractAnalysis[StyleAnalysisResult, StyleAnalysisConfig]):
 
     def get_comment_rate(self, source_code: str) -> float:
         """
-        コメント率を取得.
+        コメント率を取得
 
         Parameters
         ----------
@@ -183,7 +182,7 @@ class Style(AbstractAnalysis[StyleAnalysisResult, StyleAnalysisConfig]):
         self, source_code: str, tree: ast.AST | None = None
     ) -> float:
         """
-        docstringの割合を取得.
+        docstringの割合を取得
 
         Parameters
         ----------
@@ -213,7 +212,7 @@ class Style(AbstractAnalysis[StyleAnalysisResult, StyleAnalysisConfig]):
 
     def get_pep8_violation_rate(self, source_code: str) -> float:
         """
-        PEP8違反率を取得.
+        PEP8違反率を取得
 
         Parameters
         ----------

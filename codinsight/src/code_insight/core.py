@@ -1,4 +1,3 @@
-"""コード解析のコアモジュール."""
 from enum import StrEnum, auto
 from typing import Any, Type
 
@@ -23,7 +22,7 @@ from code_insight.code_analysis.style import Style, StyleAnalysisConfig
 
 class AnalysisConfigs(BaseModel):
     """
-    全解析エンジンの設定.
+    全解析エンジンの設定
 
     Attributes
     ----------
@@ -54,7 +53,7 @@ class AnalysisConfigs(BaseModel):
 
 class CodeAnalysisType(StrEnum):
     """
-    コード解析タイプ.
+    コード解析タイプ
 
     Attributes
     ----------
@@ -87,7 +86,7 @@ class CodeAnalysisType(StrEnum):
         type: str, config: BaseAnalysisConfig | None = None
     ) -> AbstractAnalysis[Any, Any]:
         """
-        コード解析クラスを取得.
+        コード解析クラスを取得
 
         Parameters
         ----------
@@ -126,7 +125,7 @@ class CodeAnalysisType(StrEnum):
 
 class CodeAnalysis:
     """
-    コード解析.
+    コード解析
 
     Attributes
     ----------
@@ -143,7 +142,7 @@ class CodeAnalysis:
         self, source_code: str, configs: AnalysisConfigs | None = None
     ) -> None:
         """
-        コンストラクタ.
+        コンストラクタ
 
         Parameters
         ----------
@@ -159,7 +158,7 @@ class CodeAnalysis:
         self, types: list[CodeAnalysisType]
     ) -> dict[CodeAnalysisType, Type[BaseAnalysisResult]]:
         """
-        コード解析.
+        コード解析
 
         Parameters
         ----------
@@ -183,7 +182,7 @@ class CodeAnalysis:
         self, analysis_type: CodeAnalysisType
     ) -> BaseAnalysisConfig | None:
         """
-        解析タイプに対応する設定を取得.
+        解析タイプに対応する設定を取得
 
         Parameters
         ----------

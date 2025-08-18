@@ -1,4 +1,3 @@
-"""コード冗長性解析モジュール."""
 import ast
 import hashlib
 from collections import defaultdict
@@ -15,7 +14,7 @@ from code_insight.code_analysis.abstract import (
 
 class RedundancyAnalysisConfig(BaseAnalysisConfig):
     """
-    冗長度解析設定.
+    冗長度解析設定
 
     Attributes
     ----------
@@ -34,7 +33,7 @@ class RedundancyAnalysisConfig(BaseAnalysisConfig):
 
 class RedundancyAnalysisResult(BaseAnalysisResult):
     """
-    解析結果(冗長度).
+    解析結果(冗長度)
 
     Attributes
     ----------
@@ -53,7 +52,7 @@ class RedundancyAnalysisResult(BaseAnalysisResult):
 
 class Redundancy(AbstractAnalysis[RedundancyAnalysisResult, RedundancyAnalysisConfig]):
     """
-    解析クラス(冗長度).
+    解析クラス(冗長度)
 
     Notes
     -----
@@ -62,7 +61,7 @@ class Redundancy(AbstractAnalysis[RedundancyAnalysisResult, RedundancyAnalysisCo
 
     def __init__(self, config: RedundancyAnalysisConfig | None = None) -> None:
         """
-        コンストラクタ.
+        コンストラクタ
 
         Parameters
         ----------
@@ -73,7 +72,7 @@ class Redundancy(AbstractAnalysis[RedundancyAnalysisResult, RedundancyAnalysisCo
 
     def get_default_config(self) -> RedundancyAnalysisConfig:
         """
-        デフォルト設定を取得.
+        デフォルト設定を取得
 
         Returns
         -------
@@ -84,7 +83,7 @@ class Redundancy(AbstractAnalysis[RedundancyAnalysisResult, RedundancyAnalysisCo
 
     def analyze(self, source_code: str) -> RedundancyAnalysisResult:
         """
-        コード解析.
+        コード解析
 
         Parameters
         ----------
@@ -112,7 +111,7 @@ class Redundancy(AbstractAnalysis[RedundancyAnalysisResult, RedundancyAnalysisCo
 
     def parse_source_code(self, source_code: str) -> ast.AST:
         """
-        ソースコードを解析.
+        ソースコードを解析
 
         Parameters
         ----------
@@ -130,7 +129,7 @@ class Redundancy(AbstractAnalysis[RedundancyAnalysisResult, RedundancyAnalysisCo
         self, source_code: str, tree: ast.AST | None = None
     ) -> float:
         """
-        重複コード割合を取得.
+        重複コード割合を取得
 
         Parameters
         ----------
@@ -172,7 +171,7 @@ class Redundancy(AbstractAnalysis[RedundancyAnalysisResult, RedundancyAnalysisCo
         self, source_code: str, tree: ast.AST | None = None
     ) -> float:
         """
-        未使用コード割合を取得.
+        未使用コード割合を取得
 
         Parameters
         ----------
@@ -215,7 +214,7 @@ class Redundancy(AbstractAnalysis[RedundancyAnalysisResult, RedundancyAnalysisCo
         self, source_code: str, tree: ast.AST | None = None
     ) -> float:
         """
-        長大関数割合を取得.
+        長大関数割合を取得
 
         Parameters
         ----------
@@ -264,7 +263,7 @@ class Redundancy(AbstractAnalysis[RedundancyAnalysisResult, RedundancyAnalysisCo
 
     def _get_function_structure_hash(self, func_node: ast.FunctionDef) -> str:
         """
-        関数の構造的ハッシュを取得.
+        関数の構造的ハッシュを取得
 
         Parameters
         ----------
@@ -314,7 +313,7 @@ class Redundancy(AbstractAnalysis[RedundancyAnalysisResult, RedundancyAnalysisCo
         self, func_node: ast.FunctionDef, source_code: str
     ) -> int:
         """
-        関数の行数をカウント.
+        関数の行数をカウント
 
         Parameters
         ----------

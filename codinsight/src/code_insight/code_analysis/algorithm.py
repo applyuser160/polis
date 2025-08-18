@@ -1,4 +1,3 @@
-"""アルゴリズム解析モジュール."""
 import ast
 from typing import Set
 
@@ -11,7 +10,7 @@ from code_insight.code_analysis.abstract import (
 
 class AlgorithmAnalysisConfig(BaseAnalysisConfig):
     """
-    アルゴリズム解析設定.
+    アルゴリズム解析設定
 
     Attributes
     ----------
@@ -27,7 +26,7 @@ class AlgorithmAnalysisConfig(BaseAnalysisConfig):
 
 class AlgorithmAnalysisResult(BaseAnalysisResult):
     """
-    解析結果(アルゴリズム).
+    解析結果(アルゴリズム)
 
     Attributes
     ----------
@@ -64,7 +63,7 @@ class AlgorithmAnalysisResult(BaseAnalysisResult):
 
 class Algorithm(AbstractAnalysis[AlgorithmAnalysisResult, AlgorithmAnalysisConfig]):
     """
-    解析クラス(アルゴリズム).
+    解析クラス(アルゴリズム)
 
     Notes
     -----
@@ -73,7 +72,7 @@ class Algorithm(AbstractAnalysis[AlgorithmAnalysisResult, AlgorithmAnalysisConfi
 
     def __init__(self, config: AlgorithmAnalysisConfig | None = None) -> None:
         """
-        コンストラクタ.
+        コンストラクタ
 
         Parameters
         ----------
@@ -84,7 +83,7 @@ class Algorithm(AbstractAnalysis[AlgorithmAnalysisResult, AlgorithmAnalysisConfi
 
     def get_default_config(self) -> AlgorithmAnalysisConfig:
         """
-        デフォルト設定を取得.
+        デフォルト設定を取得
 
         Returns
         -------
@@ -95,7 +94,7 @@ class Algorithm(AbstractAnalysis[AlgorithmAnalysisResult, AlgorithmAnalysisConfi
 
     def analyze(self, source_code: str) -> AlgorithmAnalysisResult:
         """
-        コード解析.
+        コード解析
 
         Parameters
         ----------
@@ -136,7 +135,7 @@ class Algorithm(AbstractAnalysis[AlgorithmAnalysisResult, AlgorithmAnalysisConfi
 
     def parse_source_code(self, source_code: str) -> ast.AST:
         """
-        ソースコードを解析.
+        ソースコードを解析
 
         Parameters
         ----------
@@ -152,7 +151,7 @@ class Algorithm(AbstractAnalysis[AlgorithmAnalysisResult, AlgorithmAnalysisConfi
 
     def get_if_count(self, source_code: str, tree: ast.AST | None = None) -> int:
         """
-        if文の数を取得.
+        if文の数を取得
 
         Parameters
         ----------
@@ -171,7 +170,7 @@ class Algorithm(AbstractAnalysis[AlgorithmAnalysisResult, AlgorithmAnalysisConfi
 
     def get_for_count(self, source_code: str, tree: ast.AST | None = None) -> int:
         """
-        for文の数を取得.
+        for文の数を取得
 
         Parameters
         ----------
@@ -190,7 +189,7 @@ class Algorithm(AbstractAnalysis[AlgorithmAnalysisResult, AlgorithmAnalysisConfi
 
     def get_while_count(self, source_code: str, tree: ast.AST | None = None) -> int:
         """
-        while文の数を取得.
+        while文の数を取得
 
         Parameters
         ----------
@@ -209,7 +208,7 @@ class Algorithm(AbstractAnalysis[AlgorithmAnalysisResult, AlgorithmAnalysisConfi
 
     def get_try_count(self, source_code: str, tree: ast.AST | None = None) -> int:
         """
-        try-except文の数を取得.
+        try-except文の数を取得
 
         Parameters
         ----------
@@ -230,7 +229,7 @@ class Algorithm(AbstractAnalysis[AlgorithmAnalysisResult, AlgorithmAnalysisConfi
         self, source_code: str, tree: ast.AST | None = None
     ) -> float:
         """
-        再帰関数の割合を取得.
+        再帰関数の割合を取得
 
         Parameters
         ----------
@@ -268,7 +267,7 @@ class Algorithm(AbstractAnalysis[AlgorithmAnalysisResult, AlgorithmAnalysisConfi
 
     def get_lambda_count(self, source_code: str, tree: ast.AST | None = None) -> int:
         """
-        lambda式の数を取得.
+        lambda式の数を取得
 
         Parameters
         ----------
@@ -289,7 +288,7 @@ class Algorithm(AbstractAnalysis[AlgorithmAnalysisResult, AlgorithmAnalysisConfi
         self, source_code: str, tree: ast.AST | None = None
     ) -> int:
         """
-        内包表記の数を取得.
+        内包表記の数を取得
 
         Parameters
         ----------
@@ -315,7 +314,7 @@ class Algorithm(AbstractAnalysis[AlgorithmAnalysisResult, AlgorithmAnalysisConfi
         self, source_code: str, tree: ast.AST | None = None
     ) -> int:
         """
-        map/filter/reduce呼び出しの数を取得.
+        map/filter/reduce呼び出しの数を取得
 
         Parameters
         ----------
@@ -347,7 +346,7 @@ class Algorithm(AbstractAnalysis[AlgorithmAnalysisResult, AlgorithmAnalysisConfi
         self, source_code: str, tree: ast.AST | None = None
     ) -> float:
         """
-        循環的複雑度の平均を取得.
+        循環的複雑度の平均を取得
 
         Parameters
         ----------
@@ -373,7 +372,7 @@ class Algorithm(AbstractAnalysis[AlgorithmAnalysisResult, AlgorithmAnalysisConfi
 
     def _calculate_function_complexity(self, func_node: ast.FunctionDef) -> int:
         """
-        関数の循環的複雑度を計算.
+        関数の循環的複雑度を計算
 
         Parameters
         ----------
@@ -401,7 +400,7 @@ class Algorithm(AbstractAnalysis[AlgorithmAnalysisResult, AlgorithmAnalysisConfi
         self, source_code: str, tree: ast.AST | None = None
     ) -> int:
         """
-        制御構文の最大ネスト深度を取得.
+        制御構文の最大ネスト深度を取得
 
         Parameters
         ----------

@@ -1,4 +1,3 @@
-"""コード構造解析モジュール."""
 import ast
 import itertools
 from collections import defaultdict
@@ -13,7 +12,7 @@ from code_insight.code_analysis.abstract import (
 
 class StructAnalysisConfig(BaseAnalysisConfig):
     """
-    構造解析設定.
+    構造解析設定
 
     Attributes
     ----------
@@ -29,7 +28,7 @@ class StructAnalysisConfig(BaseAnalysisConfig):
 
 class DecoratorType(StrEnum):
     """
-    デコレータタイプ.
+    デコレータタイプ
 
     Attributes
     ----------
@@ -51,7 +50,7 @@ class DecoratorType(StrEnum):
 
 class StructAnalysisResult(BaseAnalysisResult):
     """
-    解析結果(構造).
+    解析結果(構造)
 
     Attributes
     ----------
@@ -112,7 +111,7 @@ class StructAnalysisResult(BaseAnalysisResult):
 
 class Struct(AbstractAnalysis[StructAnalysisResult, StructAnalysisConfig]):
     """
-    解析クラス(構造).
+    解析クラス(構造)
 
     Notes
     -----
@@ -121,7 +120,7 @@ class Struct(AbstractAnalysis[StructAnalysisResult, StructAnalysisConfig]):
 
     def __init__(self, config: StructAnalysisConfig | None = None) -> None:
         """
-        コンストラクタ.
+        コンストラクタ
 
         Parameters
         ----------
@@ -132,7 +131,7 @@ class Struct(AbstractAnalysis[StructAnalysisResult, StructAnalysisConfig]):
 
     def get_default_config(self) -> StructAnalysisConfig:
         """
-        デフォルト設定を取得.
+        デフォルト設定を取得
 
         Returns
         -------
@@ -143,7 +142,7 @@ class Struct(AbstractAnalysis[StructAnalysisResult, StructAnalysisConfig]):
 
     def analyze(self, source_code: str) -> StructAnalysisResult:
         """
-        コード解析.
+        コード解析
 
         Parameters
         ----------
@@ -216,7 +215,7 @@ class Struct(AbstractAnalysis[StructAnalysisResult, StructAnalysisConfig]):
 
     def parse_source_code(self, source_code: str) -> ast.AST:
         """
-        ソースコードを解析.
+        ソースコードを解析
 
         Parameters
         ----------
@@ -232,7 +231,7 @@ class Struct(AbstractAnalysis[StructAnalysisResult, StructAnalysisConfig]):
 
     def get_function_count(self, source_code: str, tree: ast.AST | None = None) -> int:
         """
-        関数数を取得.
+        関数数を取得
 
         Parameters
         ----------
@@ -251,7 +250,7 @@ class Struct(AbstractAnalysis[StructAnalysisResult, StructAnalysisConfig]):
 
     def get_class_count(self, source_code: str, tree: ast.AST | None = None) -> int:
         """
-        クラス数を取得.
+        クラス数を取得
 
         Parameters
         ----------
@@ -270,7 +269,7 @@ class Struct(AbstractAnalysis[StructAnalysisResult, StructAnalysisConfig]):
 
     def get_line_count(self, source_code: str) -> int:
         """
-        行数を取得.
+        行数を取得
 
         Parameters
         ----------
@@ -288,7 +287,7 @@ class Struct(AbstractAnalysis[StructAnalysisResult, StructAnalysisConfig]):
         self, source_code: str, tree: ast.AST | None = None
     ) -> float:
         """
-        引数の数を取得.
+        引数の数を取得
 
         Parameters
         ----------
@@ -318,7 +317,7 @@ class Struct(AbstractAnalysis[StructAnalysisResult, StructAnalysisConfig]):
         self, source_code: str, tree: ast.AST | None = None
     ) -> float:
         """
-        戻り値の型ヒント割合を取得.
+        戻り値の型ヒント割合を取得
 
         Parameters
         ----------
@@ -351,7 +350,7 @@ class Struct(AbstractAnalysis[StructAnalysisResult, StructAnalysisConfig]):
         tree: ast.AST | None = None,
     ) -> float:
         """
-        デコレータ数を取得.
+        デコレータ数を取得
 
         Parameters
         ----------
@@ -387,7 +386,7 @@ class Struct(AbstractAnalysis[StructAnalysisResult, StructAnalysisConfig]):
         self, source_code: str, tree: ast.AST | None = None
     ) -> tuple[float, float, float, float]:
         """
-        クラス情報を取得.
+        クラス情報を取得
 
         Parameters
         ----------
@@ -436,7 +435,7 @@ class Struct(AbstractAnalysis[StructAnalysisResult, StructAnalysisConfig]):
 
     def get_dependency(self, source_code: str, tree: ast.AST | None = None) -> float:
         """
-        依存度を平均呼び出し数で算出.
+        依存度を平均呼び出し数で算出
 
         Parameters
         ----------
@@ -482,7 +481,7 @@ class Struct(AbstractAnalysis[StructAnalysisResult, StructAnalysisConfig]):
 
     def get_cohesion(self, source_code: str, tree: ast.AST | None = None) -> float:
         """
-        凝集度をLCOMベースで算出.
+        凝集度をLCOMベースで算出
 
         Parameters
         ----------
@@ -538,7 +537,7 @@ class Struct(AbstractAnalysis[StructAnalysisResult, StructAnalysisConfig]):
         self, source_code: str, tree: ast.AST | None = None
     ) -> tuple[float, float]:
         """
-        クラス継承関係情報を取得.
+        クラス継承関係情報を取得
 
         Parameters
         ----------

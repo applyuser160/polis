@@ -1,4 +1,3 @@
-"""コードインサイトパッケージ."""
 from .code_analysis.algorithm import (
     Algorithm,
     AlgorithmAnalysisConfig,

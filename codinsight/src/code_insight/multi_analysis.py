@@ -1,4 +1,3 @@
-"""複数ファイル解析モジュール."""
 from __future__ import annotations
 
 import os
@@ -16,7 +15,7 @@ DEFAULT_EXCLUDES: set[str] = {"node_modules", "target", ".git", ".venv", "__pyca
 
 class FileAnalysisResult(BaseModel):
     """
-    単一ファイルの解析結果モデル.
+    単一ファイルの解析結果モデル
 
     Attributes
     ----------
@@ -32,7 +31,7 @@ class FileAnalysisResult(BaseModel):
 
 class AggregateStats(BaseModel):
     """
-    解析全体の集約統計モデル.
+    解析全体の集約統計モデル
 
     Attributes
     ----------
@@ -54,7 +53,7 @@ class AggregateStats(BaseModel):
 
 class MultiAnalysisResult(BaseModel):
     """
-    複数ファイル解析の結果モデル.
+    複数ファイル解析の結果モデル
 
     Attributes
     ----------
@@ -69,7 +68,7 @@ class MultiAnalysisResult(BaseModel):
 
     def to_json(self) -> str:
         """
-        JSON文字列へのシリアライズ.
+        JSON文字列へのシリアライズ
 
         Returns
         -------
@@ -81,7 +80,7 @@ class MultiAnalysisResult(BaseModel):
 
 def _is_excluded(path: Path, excludes: set[str]) -> bool:
     """
-    パスが除外対象かどうかを判定.
+    パスが除外対象かどうかを判定
 
     Parameters
     ----------
@@ -105,7 +104,7 @@ def collect_paths(
     excludes: set[str] | None = None,
 ) -> list[Path]:
     """
-    入力から解析対象ファイルパスを再帰収集.
+    入力から解析対象ファイルパスを再帰収集
 
     Parameters
     ----------
@@ -153,7 +152,7 @@ def analyze_file(
     path: Path, types: list[CodeAnalysisType], configs: AnalysisConfigs | None = None
 ) -> FileAnalysisResult:
     """
-    単一ファイルを解析して結果を返却.
+    単一ファイルを解析して結果を返却
 
     Parameters
     ----------
@@ -183,7 +182,7 @@ def _aggregate_numeric_means(
     files: list[FileAnalysisResult],
 ) -> dict[str, dict[str, float]]:
     """
-    数値メトリクスの平均値を集約.
+    数値メトリクスの平均値を集約
 
     Parameters
     ----------
@@ -216,7 +215,7 @@ def _aggregate_numeric_means(
 
 class MultiFileAnalyzer:
     """
-    複数ファイル解析の管理クラス.
+    複数ファイル解析の管理クラス
 
     Attributes
     ----------
@@ -239,7 +238,7 @@ class MultiFileAnalyzer:
         configs: AnalysisConfigs | None = None,
     ) -> None:
         """
-        コンストラクタ.
+        コンストラクタ
 
         Parameters
         ----------
@@ -260,7 +259,7 @@ class MultiFileAnalyzer:
         types: list[CodeAnalysisType],
     ) -> MultiAnalysisResult:
         """
-        入力パス群を解析して結果を返却.
+        入力パス群を解析して結果を返却
 
         Parameters
         ----------
@@ -301,7 +300,7 @@ def analyze_paths(
     configs: AnalysisConfigs | None = None,
 ) -> MultiAnalysisResult:
     """
-    関数APIによる複数ファイル解析の実行.
+    関数APIによる複数ファイル解析の実行
 
     Parameters
     ----------

@@ -1,4 +1,3 @@
-"""トレンド解析モジュール."""
 from typing import Sequence
 
 import matplotlib.pyplot as plt
@@ -11,7 +10,7 @@ from code_insight.code_analysis.abstract import BaseAnalysisResult
 
 class TrendAnalysis:
     """
-    コード解析結果分析.
+    コード解析結果分析
 
     Attributes
     ----------
@@ -30,7 +29,7 @@ class TrendAnalysis:
         code_labels: list[str] | None = None,
     ) -> None:
         """
-        コンストラクタ.
+        コンストラクタ
 
         Parameters
         ----------
@@ -53,7 +52,7 @@ class TrendAnalysis:
 
     def extract_value(self, keys: list[str] | None = None) -> np.ndarray:
         """
-        任意のkeyの値を抽出.
+        任意のkeyの値を抽出
 
         Parameters
         ----------
@@ -86,7 +85,7 @@ class TrendAnalysis:
 
     def compress(self, keys: list[str] | None = None, dimention: int = 2) -> np.ndarray:
         """
-        任意のkeyの値を圧縮.
+        任意のkeyの値を圧縮
 
         Parameters
         ----------
@@ -107,7 +106,7 @@ class TrendAnalysis:
         self, keys: list[str] | None = None, cluster: int = 2
     ) -> np.ndarray:
         """
-        任意のkeyの値をクラスタリング.
+        任意のkeyの値をクラスタリング
 
         Parameters
         ----------
@@ -132,7 +131,7 @@ class TrendAnalysis:
         dimention: int = 2,
     ) -> None:
         """
-        任意のkeyの値を圧縮して画像として出力.
+        任意のkeyの値を圧縮して画像として出力
 
         Parameters
         ----------

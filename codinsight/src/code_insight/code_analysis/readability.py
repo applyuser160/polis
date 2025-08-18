@@ -1,4 +1,3 @@
-"""コード可読性解析モジュール."""
 import ast
 import math
 import re
@@ -13,7 +12,7 @@ from code_insight.code_analysis.complexity import Complexity
 
 class ReadabilityAnalysisConfig(BaseAnalysisConfig):
     """
-    可読性解析設定.
+    可読性解析設定
 
     Attributes
     ----------
@@ -32,7 +31,7 @@ class ReadabilityAnalysisConfig(BaseAnalysisConfig):
 
 class ReadabilityAnalysisResult(BaseAnalysisResult):
     """
-    解析結果(可読性).
+    解析結果(可読性)
 
     Attributes
     ----------
@@ -71,7 +70,7 @@ class Readability(
     AbstractAnalysis[ReadabilityAnalysisResult, ReadabilityAnalysisConfig]
 ):
     """
-    解析クラス(可読性).
+    解析クラス(可読性)
 
     Notes
     -----
@@ -80,7 +79,7 @@ class Readability(
 
     def __init__(self, config: ReadabilityAnalysisConfig | None = None) -> None:
         """
-        コンストラクタ.
+        コンストラクタ
 
         Parameters
         ----------
@@ -92,7 +91,7 @@ class Readability(
 
     def get_default_config(self) -> ReadabilityAnalysisConfig:
         """
-        デフォルト設定を取得.
+        デフォルト設定を取得
 
         Returns
         -------
@@ -103,7 +102,7 @@ class Readability(
 
     def analyze(self, source_code: str) -> ReadabilityAnalysisResult:
         """
-        コード解析.
+        コード解析
 
         Parameters
         ----------
@@ -145,7 +144,7 @@ class Readability(
 
     def parse_source_code(self, source_code: str) -> ast.AST:
         """
-        ソースコードを解析.
+        ソースコードを解析
 
         Parameters
         ----------
@@ -163,7 +162,7 @@ class Readability(
         self, source_code: str, tree: ast.AST | None = None
     ) -> list[str]:
         """
-        変数名を抽出.
+        変数名を抽出
 
         Parameters
         ----------
@@ -197,7 +196,7 @@ class Readability(
         self, source_code: str, tree: ast.AST | None = None
     ) -> float:
         """
-        変数名の平均長を取得.
+        変数名の平均長を取得
 
         Parameters
         ----------
@@ -222,7 +221,7 @@ class Readability(
         self, source_code: str, tree: ast.AST | None = None
     ) -> int:
         """
-        変数名の最大長を取得.
+        変数名の最大長を取得
 
         Parameters
         ----------
@@ -244,7 +243,7 @@ class Readability(
 
     def get_line_length(self, source_code: str) -> float:
         """
-        行の平均長を取得.
+        行の平均長を取得
 
         Parameters
         ----------
@@ -265,7 +264,7 @@ class Readability(
 
     def get_max_line_length(self, source_code: str) -> int:
         """
-        行の最大長を取得.
+        行の最大長を取得
 
         Parameters
         ----------
@@ -287,7 +286,7 @@ class Readability(
         self, source_code: str, tree: ast.AST | None = None
     ) -> tuple[int, int, int, int]:
         """
-        Halstead メトリクスの基本値を取得.
+        Halstead メトリクスの基本値を取得
 
         Parameters
         ----------
@@ -386,7 +385,7 @@ class Readability(
         self, source_code: str, tree: ast.AST | None = None
     ) -> float:
         """
-        Halstead Volume を計算.
+        Halstead Volume を計算
 
         Parameters
         ----------
@@ -414,7 +413,7 @@ class Readability(
         self, source_code: str, tree: ast.AST | None = None
     ) -> float:
         """
-        Halstead Difficulty を計算.
+        Halstead Difficulty を計算
 
         Parameters
         ----------
@@ -439,7 +438,7 @@ class Readability(
         self, source_code: str, tree: ast.AST | None = None
     ) -> float:
         """
-        Halstead Effort を計算.
+        Halstead Effort を計算
 
         Parameters
         ----------
@@ -460,7 +459,7 @@ class Readability(
 
     def get_nesting_depth(self, source_code: str, tree: ast.AST | None = None) -> float:
         """
-        平均ネスト深度を取得.
+        平均ネスト深度を取得
 
         Parameters
         ----------
@@ -510,7 +509,7 @@ class Readability(
         self, source_code: str, tree: ast.AST | None = None
     ) -> float:
         """
-        識別子複雑度を取得.
+        識別子複雑度を取得
 
         Parameters
         ----------

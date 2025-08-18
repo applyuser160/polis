@@ -1,4 +1,3 @@
-"""コード複雑度解析モジュール."""
 import ast
 
 import radon.complexity as cc
@@ -13,7 +12,7 @@ from code_insight.code_analysis.abstract import (
 
 class ComplexityAnalysisConfig(BaseAnalysisConfig):
     """
-    複雑度解析設定.
+    複雑度解析設定
 
     Attributes
     ----------
@@ -29,7 +28,7 @@ class ComplexityAnalysisConfig(BaseAnalysisConfig):
 
 class ComplexityAnalysisResult(BaseAnalysisResult):
     """
-    解析結果(複雑度).
+    解析結果(複雑度)
 
     Attributes
     ----------
@@ -63,7 +62,7 @@ class ComplexityAnalysisResult(BaseAnalysisResult):
 
 class Complexity(AbstractAnalysis[ComplexityAnalysisResult, ComplexityAnalysisConfig]):
     """
-    解析クラス(複雑度).
+    解析クラス(複雑度)
 
     Notes
     -----
@@ -72,7 +71,7 @@ class Complexity(AbstractAnalysis[ComplexityAnalysisResult, ComplexityAnalysisCo
 
     def __init__(self, config: ComplexityAnalysisConfig | None = None) -> None:
         """
-        コンストラクタ.
+        コンストラクタ
 
         Parameters
         ----------
@@ -83,7 +82,7 @@ class Complexity(AbstractAnalysis[ComplexityAnalysisResult, ComplexityAnalysisCo
 
     def get_default_config(self) -> ComplexityAnalysisConfig:
         """
-        デフォルト設定を取得.
+        デフォルト設定を取得
 
         Returns
         -------
@@ -94,7 +93,7 @@ class Complexity(AbstractAnalysis[ComplexityAnalysisResult, ComplexityAnalysisCo
 
     def analyze(self, source_code: str) -> ComplexityAnalysisResult:
         """
-        コード解析.
+        コード解析
 
         Parameters
         ----------
@@ -132,7 +131,7 @@ class Complexity(AbstractAnalysis[ComplexityAnalysisResult, ComplexityAnalysisCo
 
     def get_cyclomatic_complexity(self, source_code: str) -> float:
         """
-        サイクロマティック複雑度の平均を取得.
+        サイクロマティック複雑度の平均を取得
 
         Parameters
         ----------
@@ -159,7 +158,7 @@ class Complexity(AbstractAnalysis[ComplexityAnalysisResult, ComplexityAnalysisCo
 
     def get_halstead_volume(self, source_code: str) -> float:
         """
-        Halstead Volumeを取得.
+        Halstead Volumeを取得
 
         Parameters
         ----------
@@ -182,7 +181,7 @@ class Complexity(AbstractAnalysis[ComplexityAnalysisResult, ComplexityAnalysisCo
 
     def get_halstead_difficulty(self, source_code: str) -> float:
         """
-        Halstead Difficultyを取得.
+        Halstead Difficultyを取得
 
         Parameters
         ----------
@@ -205,7 +204,7 @@ class Complexity(AbstractAnalysis[ComplexityAnalysisResult, ComplexityAnalysisCo
 
     def get_halstead_effort(self, source_code: str) -> float:
         """
-        Halstead Effortを取得.
+        Halstead Effortを取得
 
         Parameters
         ----------
@@ -228,7 +227,7 @@ class Complexity(AbstractAnalysis[ComplexityAnalysisResult, ComplexityAnalysisCo
 
     def get_maintainability_index(self, source_code: str) -> float:
         """
-        保守性指数を取得.
+        保守性指数を取得
 
         Parameters
         ----------
@@ -252,7 +251,7 @@ class Complexity(AbstractAnalysis[ComplexityAnalysisResult, ComplexityAnalysisCo
         self, source_code: str, tree: ast.AST | None = None
     ) -> int:
         """
-        最大ネスト深度を取得.
+        最大ネスト深度を取得
 
         Parameters
         ----------
@@ -305,7 +304,7 @@ class Complexity(AbstractAnalysis[ComplexityAnalysisResult, ComplexityAnalysisCo
         self, source_code: str, tree: ast.AST | None = None
     ) -> float:
         """
-        平均ネスト深度を取得.
+        平均ネスト深度を取得
 
         Parameters
         ----------
@@ -345,7 +344,7 @@ class Complexity(AbstractAnalysis[ComplexityAnalysisResult, ComplexityAnalysisCo
         self, source_code: str, tree: ast.AST | None = None
     ) -> float:
         """
-        認知的複雑度を取得.
+        認知的複雑度を取得
 
         Parameters
         ----------
