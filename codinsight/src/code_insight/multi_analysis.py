@@ -7,7 +7,7 @@ from typing import Any, Iterable, cast
 from pydantic import BaseModel
 
 from code_insight.code_analysis.abstract import BaseAnalysisResult
-from code_insight.core import CodeAnalysis, CodeAnalysisType
+from code_insight.core import AnalysisConfigs, CodeAnalysis, CodeAnalysisType
 
 DEFAULT_EXTS: set[str] = {".py"}
 DEFAULT_EXCLUDES: set[str] = {"node_modules", "target", ".git", ".venv", "__pycache__"}
@@ -79,10 +79,12 @@ def collect_paths(
     return collected
 
 
-def analyze_file(path: Path, types: list[CodeAnalysisType]) -> FileAnalysisResult:
+def analyze_file(
+    path: Path, types: list[CodeAnalysisType], configs: AnalysisConfigs | None = None
+) -> FileAnalysisResult:
     """単一ファイルを解析して結果を返却"""
     source_code = path.read_text(encoding="utf-8", errors="ignore")
-    analysis = CodeAnalysis(source_code=source_code)
+    analysis = CodeAnalysis(source_code=source_code, configs=configs)
     result_map = analysis.analyze(types)
     as_dict: dict[str, dict[str, Any]] = {}
     for t, model in result_map.items():
@@ -118,13 +120,18 @@ class MultiFileAnalyzer:
 
     exts: set[str]
     excludes: set[str]
+    configs: AnalysisConfigs | None
 
     def __init__(
-        self, exts: set[str] | None = None, excludes: set[str] | None = None
+        self,
+        exts: set[str] | None = None,
+        excludes: set[str] | None = None,
+        configs: AnalysisConfigs | None = None,
     ) -> None:
         """コンストラクタ"""
         self.exts = exts or DEFAULT_EXTS
         self.excludes = excludes or DEFAULT_EXCLUDES
+        self.configs = configs
 
     def analyze(
         self,
@@ -138,7 +145,7 @@ class MultiFileAnalyzer:
 
         for p in paths:
             try:
-                files.append(analyze_file(p, types))
+                files.append(analyze_file(p, types, self.configs))
             except Exception:
                 errors.append(str(p))
 
@@ -156,7 +163,8 @@ def analyze_paths(
     types: list[CodeAnalysisType],
     exts: set[str] | None = None,
     excludes: set[str] | None = None,
+    configs: AnalysisConfigs | None = None,
 ) -> MultiAnalysisResult:
     """関数APIによる複数ファイル解析の実行"""
-    analyzer = MultiFileAnalyzer(exts=exts, excludes=excludes)
+    analyzer = MultiFileAnalyzer(exts=exts, excludes=excludes, configs=configs)
     return analyzer.analyze(inputs=inputs, types=types)
