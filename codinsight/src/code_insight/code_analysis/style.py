@@ -3,7 +3,18 @@ import re
 
 import pycodestyle
 
-from code_insight.code_analysis.abstract import AbstractAnalysis, BaseAnalysisResult
+from code_insight.code_analysis.abstract import (
+    AbstractAnalysis,
+    BaseAnalysisConfig,
+    BaseAnalysisResult,
+)
+
+
+class StyleAnalysisConfig(BaseAnalysisConfig):
+    """スタイル解析設定"""
+
+    function_name_pattern: str = r"^[a-z_][a-z0-9_]*$"
+    class_name_pattern: str = r"^[A-Z][a-zA-Z0-9]*$"
 
 
 class StyleAnalysisResult(BaseAnalysisResult):
@@ -25,12 +36,28 @@ class StyleAnalysisResult(BaseAnalysisResult):
     pep8_violation_rate: float
 
 
-class Style(AbstractAnalysis[StyleAnalysisResult]):
+class Style(AbstractAnalysis[StyleAnalysisResult, StyleAnalysisConfig]):
     """解析クラス(スタイル)"""
+
+    def __init__(self, config: StyleAnalysisConfig | None = None) -> None:
+        """コンストラクタ"""
+        super().__init__(config)
+
+    def get_default_config(self) -> StyleAnalysisConfig:
+        """デフォルト設定を取得"""
+        return StyleAnalysisConfig()
 
     def analyze(self, source_code: str) -> StyleAnalysisResult:
         """コード解析"""
         tree = ast.parse(source_code)
+        if not self.config.enabled:
+            return StyleAnalysisResult(
+                naming_convention=0.0,
+                comment_rate=0.0,
+                docstring_rate=0.0,
+                pep8_violation_rate=0.0,
+            )
+
         return StyleAnalysisResult(
             naming_convention=self.get_naming_convention(source_code, tree),
             comment_rate=self.get_comment_rate(source_code),
@@ -46,10 +73,10 @@ class Style(AbstractAnalysis[StyleAnalysisResult]):
         violations = 0
         for node in ast.walk(tree):
             if isinstance(node, ast.FunctionDef):
-                if not re.match(r"^[a-z_][a-z0-9_]*$", node.name):
+                if not re.match(self.config.function_name_pattern, node.name):
                     violations += 1
             if isinstance(node, ast.ClassDef):
-                if not re.match(r"^[A-Z][a-zA-Z0-9]*$", node.name):
+                if not re.match(self.config.class_name_pattern, node.name):
                     violations += 1
 
         return violations

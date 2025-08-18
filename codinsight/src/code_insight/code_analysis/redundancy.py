@@ -1,12 +1,23 @@
 import ast
 import hashlib
 from collections import defaultdict
-from typing import Any, Dict, List, Set
+from typing import Dict, List, Set
 
 from radon.complexity import cc_visit
-from radon.metrics import mi_visit
 
-from code_insight.code_analysis.abstract import AbstractAnalysis, BaseAnalysisResult
+from code_insight.code_analysis.abstract import (
+    AbstractAnalysis,
+    BaseAnalysisConfig,
+    BaseAnalysisResult,
+)
+
+
+class RedundancyAnalysisConfig(BaseAnalysisConfig):
+    """冗長度解析設定"""
+
+    long_function_lines_threshold: int = 50
+    long_function_complexity_threshold: int = 10
+    ignored_function_names: set[str] = {"main", "__init__", "__main__"}
 
 
 class RedundancyAnalysisResult(BaseAnalysisResult):
@@ -18,31 +29,38 @@ class RedundancyAnalysisResult(BaseAnalysisResult):
         * 定義されているが呼び出されていない関数・クラスの割合
     * 長大関数割合
         * 50行以上または循環的複雑度10以上の関数の割合
-    * 循環的複雑度
-        * 関数の平均循環的複雑度
-    * 保守性指数
-        * 関数の平均保守性指数
     """
 
     duplicate_code_rate: float
     unused_code_rate: float
     long_function_rate: float
-    cyclomatic_complexity: float
-    maintainability_index: float
 
 
-class Redundancy(AbstractAnalysis[RedundancyAnalysisResult]):
+class Redundancy(AbstractAnalysis[RedundancyAnalysisResult, RedundancyAnalysisConfig]):
     """解析クラス(冗長度)"""
+
+    def __init__(self, config: RedundancyAnalysisConfig | None = None) -> None:
+        """コンストラクタ"""
+        super().__init__(config)
+
+    def get_default_config(self) -> RedundancyAnalysisConfig:
+        """デフォルト設定を取得"""
+        return RedundancyAnalysisConfig()
 
     def analyze(self, source_code: str) -> RedundancyAnalysisResult:
         """コード解析"""
+        if not self.config.enabled:
+            return RedundancyAnalysisResult(
+                duplicate_code_rate=0.0,
+                unused_code_rate=0.0,
+                long_function_rate=0.0,
+            )
+
         tree = self.parse_source_code(source_code)
         return RedundancyAnalysisResult(
             duplicate_code_rate=self.get_duplicate_code_rate(source_code, tree),
             unused_code_rate=self.get_unused_code_rate(source_code, tree),
             long_function_rate=self.get_long_function_rate(source_code, tree),
-            cyclomatic_complexity=self.get_cyclomatic_complexity(source_code),
-            maintainability_index=self.get_maintainability_index(source_code),
         )
 
     def parse_source_code(self, source_code: str) -> ast.AST:
@@ -90,7 +108,7 @@ class Redundancy(AbstractAnalysis[RedundancyAnalysisResult]):
 
         for node in ast.walk(tree):
             if isinstance(node, ast.FunctionDef):
-                if node.name not in ["main", "__init__", "__main__"]:
+                if node.name not in self.config.ignored_function_names:
                     defined_names.add(node.name)
             elif isinstance(node, ast.ClassDef):
                 defined_names.add(node.name)
@@ -132,45 +150,16 @@ class Redundancy(AbstractAnalysis[RedundancyAnalysisResult]):
                 func_lines = self._count_function_lines(node, source_code)
                 func_complexity = complexity_map.get(node.name, 1)
 
-                if func_lines >= 50 or func_complexity >= 10:
+                if (
+                    func_lines >= self.config.long_function_lines_threshold
+                    or func_complexity >= self.config.long_function_complexity_threshold
+                ):
                     long_functions += 1
 
         if total_functions == 0:
             return 0.0
 
         return long_functions / total_functions
-
-    def get_cyclomatic_complexity(self, source_code: str) -> float:
-        """循環的複雑度の平均を取得"""
-        if not source_code.strip():
-            return 0.0
-
-        try:
-            complexity_results = cc_visit(source_code)
-            if not complexity_results:
-                return 0.0
-
-            total_complexity = sum(result.complexity for result in complexity_results)
-            return total_complexity / len(complexity_results)
-        except Exception:
-            return 0.0
-
-    def get_maintainability_index(self, source_code: str) -> float:
-        """保守性指数の平均を取得"""
-        if not source_code.strip():
-            return 0.0
-
-        try:
-            mi_results: list[Any] = mi_visit(
-                source_code, multi=True
-            )  # pyright: ignore[reportAssignmentType]
-            if not mi_results:
-                return 0.0
-
-            total_mi = sum(result.mi for result in mi_results)
-            return total_mi / len(mi_results)
-        except Exception:
-            return 0.0
 
     def _get_function_structure_hash(self, func_node: ast.FunctionDef) -> str:
         """関数の構造的ハッシュを取得"""

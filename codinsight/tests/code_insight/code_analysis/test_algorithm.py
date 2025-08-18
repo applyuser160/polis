@@ -34,7 +34,6 @@ def test_algorithm_normal() -> None:
     assert result.lambda_count == 1
     assert result.comprehension_count == 1
     assert result.functional_call_count == 1
-    assert result.cyclomatic_complexity > 1.0
     assert result.max_nesting_depth == 3
 
 
@@ -54,7 +53,6 @@ def test_algorithm_empty() -> None:
     assert result.lambda_count == 0
     assert result.comprehension_count == 0
     assert result.functional_call_count == 0
-    assert result.cyclomatic_complexity == 0.0
     assert result.max_nesting_depth == 0
 
 

@@ -1,7 +1,17 @@
 import ast
 import re
 
-from code_insight.code_analysis.abstract import AbstractAnalysis, BaseAnalysisResult
+from code_insight.code_analysis.abstract import (
+    AbstractAnalysis,
+    BaseAnalysisConfig,
+    BaseAnalysisResult,
+)
+
+
+class QualityAnalysisConfig(BaseAnalysisConfig):
+    """品質解析設定"""
+
+    long_param_threshold: int = 5
 
 
 class QualityAnalysisResult(BaseAnalysisResult):
@@ -32,14 +42,31 @@ class QualityAnalysisResult(BaseAnalysisResult):
     todo_comment_rate: float
 
 
-class Quality(AbstractAnalysis[QualityAnalysisResult]):
+class Quality(AbstractAnalysis[QualityAnalysisResult, QualityAnalysisConfig]):
     """解析クラス(品質)"""
 
-    LONG_PARAM_THRESHOLD = 5
+    def __init__(self, config: QualityAnalysisConfig | None = None) -> None:
+        """コンストラクタ"""
+        super().__init__(config)
+
+    def get_default_config(self) -> QualityAnalysisConfig:
+        """デフォルト設定を取得"""
+        return QualityAnalysisConfig()
 
     def analyze(self, source_code: str) -> QualityAnalysisResult:
         """コード解析"""
         tree = self.parse_source_code(source_code)
+        if not self.config.enabled:
+            return QualityAnalysisResult(
+                type_hint_coverage=0.0,
+                docstring_coverage=0.0,
+                exception_handling_rate=0.0,
+                avg_function_length=0.0,
+                long_parameter_function_rate=0.0,
+                assert_count=0,
+                todo_comment_rate=0.0,
+            )
+
         return QualityAnalysisResult(
             type_hint_coverage=self.get_type_hint_coverage(source_code, tree),
             docstring_coverage=self.get_docstring_coverage(source_code, tree),
@@ -183,7 +210,9 @@ class Quality(AbstractAnalysis[QualityAnalysisResult]):
                 count += 1
             return count
 
-        long_count = sum(1 for f in funcs if param_count(f) > self.LONG_PARAM_THRESHOLD)
+        long_count = sum(
+            1 for f in funcs if param_count(f) > self.config.long_param_threshold
+        )
         return long_count / len(funcs)
 
     def get_assert_count(self, source_code: str, tree: ast.AST | None = None) -> int:

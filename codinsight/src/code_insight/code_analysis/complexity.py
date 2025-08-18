@@ -3,7 +3,18 @@ import ast
 import radon.complexity as cc
 import radon.metrics as metrics
 
-from code_insight.code_analysis.abstract import AbstractAnalysis, BaseAnalysisResult
+from code_insight.code_analysis.abstract import (
+    AbstractAnalysis,
+    BaseAnalysisConfig,
+    BaseAnalysisResult,
+)
+
+
+class ComplexityAnalysisConfig(BaseAnalysisConfig):
+    """複雑度解析設定"""
+
+    max_nesting_depth_threshold: int = 5
+    cognitive_complexity_threshold: float = 10.0
 
 
 class ComplexityAnalysisResult(BaseAnalysisResult):
@@ -31,12 +42,32 @@ class ComplexityAnalysisResult(BaseAnalysisResult):
     maintainability_index: float
 
 
-class Complexity(AbstractAnalysis[ComplexityAnalysisResult]):
+class Complexity(AbstractAnalysis[ComplexityAnalysisResult, ComplexityAnalysisConfig]):
     """解析クラス(複雑度)"""
+
+    def __init__(self, config: ComplexityAnalysisConfig | None = None) -> None:
+        """コンストラクタ"""
+        super().__init__(config)
+
+    def get_default_config(self) -> ComplexityAnalysisConfig:
+        """デフォルト設定を取得"""
+        return ComplexityAnalysisConfig()
 
     def analyze(self, source_code: str) -> ComplexityAnalysisResult:
         """コード解析"""
         tree = ast.parse(source_code) if source_code.strip() else ast.parse("")
+        if not self.config.enabled:
+            return ComplexityAnalysisResult(
+                cyclomatic_complexity=0.0,
+                halstead_volume=0.0,
+                halstead_difficulty=0.0,
+                halstead_effort=0.0,
+                max_nesting_depth=0,
+                avg_nesting_depth=0.0,
+                cognitive_complexity=0.0,
+                maintainability_index=0.0,
+            )
+
         return ComplexityAnalysisResult(
             cyclomatic_complexity=self.get_cyclomatic_complexity(source_code),
             halstead_volume=self.get_halstead_volume(source_code),
