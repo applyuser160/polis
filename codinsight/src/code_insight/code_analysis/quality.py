@@ -9,7 +9,14 @@ from code_insight.code_analysis.abstract import (
 
 
 class QualityAnalysisConfig(BaseAnalysisConfig):
-    """品質解析設定"""
+    """
+    品質解析設定
+
+    Attributes
+    ----------
+    long_param_threshold : int
+        長引数関数の閾値, by default 5
+    """
 
     long_param_threshold: int = 5
 
@@ -17,20 +24,23 @@ class QualityAnalysisConfig(BaseAnalysisConfig):
 class QualityAnalysisResult(BaseAnalysisResult):
     """
     解析結果(品質)
-    * 型ヒント網羅率
-        * 引数・戻り値に型注釈が付与されている割合
-    * docstringカバレッジ
-        * モジュール・関数・クラスのdocstringが記載されている割合
-    * 例外ハンドリング率
-        * try文の数を関数数で割った割合
-    * 平均関数行数
-        * 関数定義ごとの行数の平均
-    * 長引数関数割合
-        * 引数個数が閾値を超える関数の割合
-    * アサーション数
-        * assert文の総数
-    * TODOコメント率
-        * TODO/FIXMEを含む行の割合
+
+    Attributes
+    ----------
+    type_hint_coverage : float
+        型ヒント網羅率（引数・戻り値に型注釈が付与されている割合）
+    docstring_coverage : float
+        docstringカバレッジ（モジュール・関数・クラスのdocstringが記載されている割合）
+    exception_handling_rate : float
+        例外ハンドリング率（try文の数を関数数で割った割合）
+    avg_function_length : float
+        平均関数行数（関数定義ごとの行数の平均）
+    long_parameter_function_rate : float
+        長引数関数割合（引数個数が閾値を超える関数の割合）
+    assert_count : int
+        アサーション数（assert文の総数）
+    todo_comment_rate : float
+        TODOコメント率（TODO/FIXMEを含む行の割合）
     """
 
     type_hint_coverage: float
@@ -43,18 +53,50 @@ class QualityAnalysisResult(BaseAnalysisResult):
 
 
 class Quality(AbstractAnalysis[QualityAnalysisResult, QualityAnalysisConfig]):
-    """解析クラス(品質)"""
+    """
+    解析クラス(品質)
+
+    Notes
+    -----
+    コードの品質を多角的に解析するクラス
+    """
 
     def __init__(self, config: QualityAnalysisConfig | None = None) -> None:
-        """コンストラクタ"""
+        """
+        コンストラクタ
+
+        Parameters
+        ----------
+        config : QualityAnalysisConfig | None, optional
+            品質解析設定, by default None
+        """
         super().__init__(config)
 
     def get_default_config(self) -> QualityAnalysisConfig:
-        """デフォルト設定を取得"""
+        """
+        デフォルト設定を取得
+
+        Returns
+        -------
+        QualityAnalysisConfig
+            デフォルトの品質解析設定
+        """
         return QualityAnalysisConfig()
 
     def analyze(self, source_code: str) -> QualityAnalysisResult:
-        """コード解析"""
+        """
+        コード解析
+
+        Parameters
+        ----------
+        source_code : str
+            解析対象のソースコード
+
+        Returns
+        -------
+        QualityAnalysisResult
+            品質解析結果
+        """
         tree = self.parse_source_code(source_code)
         if not self.config.enabled:
             return QualityAnalysisResult(
@@ -80,17 +122,55 @@ class Quality(AbstractAnalysis[QualityAnalysisResult, QualityAnalysisConfig]):
         )
 
     def parse_source_code(self, source_code: str) -> ast.AST:
-        """ソースコードを解析"""
+        """
+        ソースコードを解析
+
+        Parameters
+        ----------
+        source_code : str
+            解析対象のソースコード
+
+        Returns
+        -------
+        ast.AST
+            解析済みのAST
+        """
         return ast.parse(source_code or "")
 
     def get_functions(self, tree: ast.AST) -> list[ast.FunctionDef]:
-        """関数定義を取得"""
+        """
+        関数定義を取得
+
+        Parameters
+        ----------
+        tree : ast.AST
+            解析済みのAST
+
+        Returns
+        -------
+        list[ast.FunctionDef]
+            関数定義のリスト
+        """
         return [n for n in ast.walk(tree) if isinstance(n, ast.FunctionDef)]
 
     def get_type_hint_coverage(
         self, source_code: str, tree: ast.AST | None = None
     ) -> float:
-        """型ヒント網羅率を取得"""
+        """
+        型ヒント網羅率を取得
+
+        Parameters
+        ----------
+        source_code : str
+            解析対象のソースコード
+        tree : ast.AST | None, optional
+            解析済みのAST, by default None
+
+        Returns
+        -------
+        float
+            型ヒント網羅率
+        """
         if not source_code.strip() and tree is None:
             return 0.0
 
@@ -131,7 +211,21 @@ class Quality(AbstractAnalysis[QualityAnalysisResult, QualityAnalysisConfig]):
     def get_docstring_coverage(
         self, source_code: str, tree: ast.AST | None = None
     ) -> float:
-        """docstringカバレッジを取得"""
+        """
+        docstringカバレッジを取得
+
+        Parameters
+        ----------
+        source_code : str
+            解析対象のソースコード
+        tree : ast.AST | None, optional
+            解析済みのAST, by default None
+
+        Returns
+        -------
+        float
+            docstringカバレッジ
+        """
         if not source_code.strip() and tree is None:
             return 0.0
 
@@ -150,7 +244,21 @@ class Quality(AbstractAnalysis[QualityAnalysisResult, QualityAnalysisConfig]):
     def get_exception_handling_rate(
         self, source_code: str, tree: ast.AST | None = None
     ) -> float:
-        """例外ハンドリング率を取得"""
+        """
+        例外ハンドリング率を取得
+
+        Parameters
+        ----------
+        source_code : str
+            解析対象のソースコード
+        tree : ast.AST | None, optional
+            解析済みのAST, by default None
+
+        Returns
+        -------
+        float
+            例外ハンドリング率
+        """
         if not source_code.strip() and tree is None:
             return 0.0
         tree = tree or self.parse_source_code(source_code)
@@ -163,7 +271,21 @@ class Quality(AbstractAnalysis[QualityAnalysisResult, QualityAnalysisConfig]):
     def _count_function_lines(
         self, func_node: ast.FunctionDef, source_code: str
     ) -> int:
-        """関数の行数をカウント"""
+        """
+        関数の行数をカウント
+
+        Parameters
+        ----------
+        func_node : ast.FunctionDef
+            関数定義ノード
+        source_code : str
+            ソースコード
+
+        Returns
+        -------
+        int
+            関数の行数
+        """
         if hasattr(func_node, "end_lineno") and func_node.end_lineno:
             return int(func_node.end_lineno) - int(func_node.lineno) + 1
 
@@ -180,7 +302,21 @@ class Quality(AbstractAnalysis[QualityAnalysisResult, QualityAnalysisConfig]):
     def get_avg_function_length(
         self, source_code: str, tree: ast.AST | None = None
     ) -> float:
-        """平均関数行数を取得"""
+        """
+        平均関数行数を取得
+
+        Parameters
+        ----------
+        source_code : str
+            解析対象のソースコード
+        tree : ast.AST | None, optional
+            解析済みのAST, by default None
+
+        Returns
+        -------
+        float
+            平均関数行数
+        """
         if not source_code.strip() and tree is None:
             return 0.0
         tree = tree or self.parse_source_code(source_code)
@@ -193,7 +329,21 @@ class Quality(AbstractAnalysis[QualityAnalysisResult, QualityAnalysisConfig]):
     def get_long_parameter_function_rate(
         self, source_code: str, tree: ast.AST | None = None
     ) -> float:
-        """長引数関数割合を取得"""
+        """
+        長引数関数割合を取得
+
+        Parameters
+        ----------
+        source_code : str
+            解析対象のソースコード
+        tree : ast.AST | None, optional
+            解析済みのAST, by default None
+
+        Returns
+        -------
+        float
+            長引数関数割合
+        """
         if not source_code.strip() and tree is None:
             return 0.0
         tree = tree or self.parse_source_code(source_code)
@@ -216,14 +366,40 @@ class Quality(AbstractAnalysis[QualityAnalysisResult, QualityAnalysisConfig]):
         return long_count / len(funcs)
 
     def get_assert_count(self, source_code: str, tree: ast.AST | None = None) -> int:
-        """アサーション数を取得"""
+        """
+        アサーション数を取得
+
+        Parameters
+        ----------
+        source_code : str
+            解析対象のソースコード
+        tree : ast.AST | None, optional
+            解析済みのAST, by default None
+
+        Returns
+        -------
+        int
+            アサーション数
+        """
         if not source_code.strip() and tree is None:
             return 0
         tree = tree or self.parse_source_code(source_code)
         return sum(1 for n in ast.walk(tree) if isinstance(n, ast.Assert))
 
     def get_todo_comment_rate(self, source_code: str) -> float:
-        """TODOコメント率を取得"""
+        """
+        TODOコメント率を取得
+
+        Parameters
+        ----------
+        source_code : str
+            解析対象のソースコード
+
+        Returns
+        -------
+        float
+            TODOコメント率
+        """
         lines = source_code.splitlines()
         non_empty_lines = [line for line in lines if line.strip()]
         if not non_empty_lines:

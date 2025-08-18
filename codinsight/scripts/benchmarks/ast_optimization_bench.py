@@ -26,7 +26,9 @@ def read_text(path: Path) -> str:
         return ""
 
 
-def bench_once(target_files: list[Path], types: list[CodeAnalysisType]) -> dict[str, float]:
+def bench_once(
+    target_files: list[Path], types: list[CodeAnalysisType]
+) -> dict[str, float]:
     results: dict[str, float] = {}
     for t in types:
         analyzer = CodeAnalysisType.get_code_analysis_class(t)

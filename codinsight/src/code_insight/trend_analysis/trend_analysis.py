@@ -9,7 +9,16 @@ from code_insight.code_analysis.abstract import BaseAnalysisResult
 
 
 class TrendAnalysis:
-    """コード解析結果分析"""
+    """
+    コード解析結果分析
+
+    Attributes
+    ----------
+    code_labels : list[str]
+        コードラベルのリスト
+    code_analysis_list : list[dict[str, float]]
+        コード解析結果のリスト
+    """
 
     code_labels: list[str]
     code_analysis_list: list[dict[str, float]]
@@ -19,7 +28,16 @@ class TrendAnalysis:
         code_analysis_results: Sequence[Sequence[BaseAnalysisResult]],
         code_labels: list[str] | None = None,
     ) -> None:
-        """コンストラクタ"""
+        """
+        コンストラクタ
+
+        Parameters
+        ----------
+        code_analysis_results : Sequence[Sequence[BaseAnalysisResult]]
+            コード解析結果のシーケンス
+        code_labels : list[str] | None, optional
+            コードラベルのリスト, by default None
+        """
         self.code_labels = code_labels if code_labels else []
         self.code_analysis_list: list[dict[str, float]] = [
             {
@@ -35,7 +53,20 @@ class TrendAnalysis:
     def extract_value(self, keys: list[str] | None = None) -> np.ndarray:
         """
         任意のkeyの値を抽出
-        * keysが空ならすべてのkeyを抽出する
+
+        Parameters
+        ----------
+        keys : list[str] | None, optional
+            抽出するキーのリスト, by default None
+
+        Returns
+        -------
+        np.ndarray
+            抽出された値の配列
+
+        Notes
+        -----
+        keysが空ならすべてのkeyを抽出する
         """
         if not keys:
             return np.array(
@@ -53,14 +84,42 @@ class TrendAnalysis:
         )
 
     def compress(self, keys: list[str] | None = None, dimention: int = 2) -> np.ndarray:
-        """任意のkeyの値を圧縮"""
+        """
+        任意のkeyの値を圧縮
+
+        Parameters
+        ----------
+        keys : list[str] | None
+            圧縮するキーのリスト, by default None
+        dimention : int
+            圧縮後の次元数, by default 2
+
+        Returns
+        -------
+        np.ndarray
+            圧縮された値の配列
+        """
         pca = PCA(n_components=dimention)
         return pca.fit_transform(self.extract_value(keys))
 
     def cluster_values(
         self, keys: list[str] | None = None, cluster: int = 2
     ) -> np.ndarray:
-        """任意のkeyの値をクラスタリング"""
+        """
+        任意のkeyの値をクラスタリング
+
+        Parameters
+        ----------
+        keys : list[str] | None
+            クラスタリングするキーのリスト, by default None
+        cluster : int
+            クラスタ数, by default 2
+
+        Returns
+        -------
+        np.ndarray
+            クラスタリング結果の配列
+        """
         kmeans = KMeans(n_clusters=cluster)
         return kmeans.fit_predict(self.extract_value(keys))
 
@@ -71,7 +130,20 @@ class TrendAnalysis:
         cluster: int = 2,
         dimention: int = 2,
     ) -> None:
-        """任意のkeyの値を圧縮して画像として出力"""
+        """
+        任意のkeyの値を圧縮して画像として出力
+
+        Parameters
+        ----------
+        output_file : str
+            出力ファイル名, by default "clusters.png"
+        keys : list[str] | None
+            処理するキーのリスト, by default None
+        cluster : int
+            クラスタ数, by default 2
+        dimention : int
+            次元数, by default 2
+        """
         X = self.extract_value(keys)
 
         # KMeansクラスタリング

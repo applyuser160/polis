@@ -11,7 +11,16 @@ from code_insight.code_analysis.abstract import (
 
 
 class ComplexityAnalysisConfig(BaseAnalysisConfig):
-    """複雑度解析設定"""
+    """
+    複雑度解析設定
+
+    Attributes
+    ----------
+    max_nesting_depth_threshold : int
+        最大ネスト深度の閾値, by default 5
+    cognitive_complexity_threshold : float
+        認知的複雑度の閾値, by default 10.0
+    """
 
     max_nesting_depth_threshold: int = 5
     cognitive_complexity_threshold: float = 10.0
@@ -20,16 +29,25 @@ class ComplexityAnalysisConfig(BaseAnalysisConfig):
 class ComplexityAnalysisResult(BaseAnalysisResult):
     """
     解析結果(複雑度)
-    * サイクロマティック複雑度
-        * 関数・メソッドの平均サイクロマティック複雑度
-    * Halstead複雑度
-        * Halstead Volume, Difficulty, Effort
-    * ネストの深さ
-        * 最大ネスト深度と平均ネスト深度
-    * 認知的複雑度
-        * 制御構造の複雑さを測定
-    * 保守性指数
-        * Maintainability Index
+
+    Attributes
+    ----------
+    cyclomatic_complexity : float
+        関数・メソッドの平均サイクロマティック複雑度
+    halstead_volume : float
+        Halstead Volume
+    halstead_difficulty : float
+        Halstead Difficulty
+    halstead_effort : float
+        Halstead Effort
+    max_nesting_depth : int
+        最大ネスト深度
+    avg_nesting_depth : float
+        平均ネスト深度
+    cognitive_complexity : float
+        認知的複雑度（制御構造の複雑さを測定）
+    maintainability_index : float
+        保守性指数（Maintainability Index）
     """
 
     cyclomatic_complexity: float
@@ -43,18 +61,50 @@ class ComplexityAnalysisResult(BaseAnalysisResult):
 
 
 class Complexity(AbstractAnalysis[ComplexityAnalysisResult, ComplexityAnalysisConfig]):
-    """解析クラス(複雑度)"""
+    """
+    解析クラス(複雑度)
+
+    Notes
+    -----
+    コードの複雑度を多角的に解析するクラス
+    """
 
     def __init__(self, config: ComplexityAnalysisConfig | None = None) -> None:
-        """コンストラクタ"""
+        """
+        コンストラクタ
+
+        Parameters
+        ----------
+        config : ComplexityAnalysisConfig | None, optional
+            複雑度解析設定, by default None
+        """
         super().__init__(config)
 
     def get_default_config(self) -> ComplexityAnalysisConfig:
-        """デフォルト設定を取得"""
+        """
+        デフォルト設定を取得
+
+        Returns
+        -------
+        ComplexityAnalysisConfig
+            デフォルトの複雑度解析設定
+        """
         return ComplexityAnalysisConfig()
 
     def analyze(self, source_code: str) -> ComplexityAnalysisResult:
-        """コード解析"""
+        """
+        コード解析
+
+        Parameters
+        ----------
+        source_code : str
+            解析対象のソースコード
+
+        Returns
+        -------
+        ComplexityAnalysisResult
+            複雑度解析結果
+        """
         tree = ast.parse(source_code) if source_code.strip() else ast.parse("")
         if not self.config.enabled:
             return ComplexityAnalysisResult(
@@ -80,7 +130,19 @@ class Complexity(AbstractAnalysis[ComplexityAnalysisResult, ComplexityAnalysisCo
         )
 
     def get_cyclomatic_complexity(self, source_code: str) -> float:
-        """サイクロマティック複雑度の平均を取得"""
+        """
+        サイクロマティック複雑度の平均を取得
+
+        Parameters
+        ----------
+        source_code : str
+            解析対象のソースコード
+
+        Returns
+        -------
+        float
+            サイクロマティック複雑度の平均値
+        """
         if not source_code.strip():
             return 0.0
 
@@ -95,7 +157,19 @@ class Complexity(AbstractAnalysis[ComplexityAnalysisResult, ComplexityAnalysisCo
             return 0.0
 
     def get_halstead_volume(self, source_code: str) -> float:
-        """Halstead Volumeを取得"""
+        """
+        Halstead Volumeを取得
+
+        Parameters
+        ----------
+        source_code : str
+            解析対象のソースコード
+
+        Returns
+        -------
+        float
+            Halstead Volume値
+        """
         if not source_code.strip():
             return 0.0
 
@@ -106,7 +180,19 @@ class Complexity(AbstractAnalysis[ComplexityAnalysisResult, ComplexityAnalysisCo
             return 0.0
 
     def get_halstead_difficulty(self, source_code: str) -> float:
-        """Halstead Difficultyを取得"""
+        """
+        Halstead Difficultyを取得
+
+        Parameters
+        ----------
+        source_code : str
+            解析対象のソースコード
+
+        Returns
+        -------
+        float
+            Halstead Difficulty値
+        """
         if not source_code.strip():
             return 0.0
 
@@ -117,7 +203,19 @@ class Complexity(AbstractAnalysis[ComplexityAnalysisResult, ComplexityAnalysisCo
             return 0.0
 
     def get_halstead_effort(self, source_code: str) -> float:
-        """Halstead Effortを取得"""
+        """
+        Halstead Effortを取得
+
+        Parameters
+        ----------
+        source_code : str
+            解析対象のソースコード
+
+        Returns
+        -------
+        float
+            Halstead Effort値
+        """
         if not source_code.strip():
             return 0.0
 
@@ -128,7 +226,19 @@ class Complexity(AbstractAnalysis[ComplexityAnalysisResult, ComplexityAnalysisCo
             return 0.0
 
     def get_maintainability_index(self, source_code: str) -> float:
-        """保守性指数を取得"""
+        """
+        保守性指数を取得
+
+        Parameters
+        ----------
+        source_code : str
+            解析対象のソースコード
+
+        Returns
+        -------
+        float
+            保守性指数
+        """
         if not source_code.strip():
             return 0.0
 
@@ -140,7 +250,21 @@ class Complexity(AbstractAnalysis[ComplexityAnalysisResult, ComplexityAnalysisCo
     def get_max_nesting_depth(
         self, source_code: str, tree: ast.AST | None = None
     ) -> int:
-        """最大ネスト深度を取得"""
+        """
+        最大ネスト深度を取得
+
+        Parameters
+        ----------
+        source_code : str
+            解析対象のソースコード
+        tree : ast.AST | None, optional
+            解析済みのAST, by default None
+
+        Returns
+        -------
+        int
+            最大ネスト深度
+        """
         if not source_code.strip() and tree is None:
             return 0
 
@@ -179,7 +303,21 @@ class Complexity(AbstractAnalysis[ComplexityAnalysisResult, ComplexityAnalysisCo
     def get_avg_nesting_depth(
         self, source_code: str, tree: ast.AST | None = None
     ) -> float:
-        """平均ネスト深度を取得"""
+        """
+        平均ネスト深度を取得
+
+        Parameters
+        ----------
+        source_code : str
+            解析対象のソースコード
+        tree : ast.AST | None, optional
+            解析済みのAST, by default None
+
+        Returns
+        -------
+        float
+            平均ネスト深度
+        """
         if not source_code.strip() and tree is None:
             return 0.0
 
@@ -205,7 +343,21 @@ class Complexity(AbstractAnalysis[ComplexityAnalysisResult, ComplexityAnalysisCo
     def get_cognitive_complexity(
         self, source_code: str, tree: ast.AST | None = None
     ) -> float:
-        """認知的複雑度を取得"""
+        """
+        認知的複雑度を取得
+
+        Parameters
+        ----------
+        source_code : str
+            解析対象のソースコード
+        tree : ast.AST | None, optional
+            解析済みのAST, by default None
+
+        Returns
+        -------
+        float
+            認知的複雑度
+        """
         if not source_code.strip() and tree is None:
             return 0.0
 

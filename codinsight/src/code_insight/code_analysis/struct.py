@@ -11,7 +11,16 @@ from code_insight.code_analysis.abstract import (
 
 
 class StructAnalysisConfig(BaseAnalysisConfig):
-    """構造解析設定"""
+    """
+    構造解析設定
+
+    Attributes
+    ----------
+    max_inheritance_depth : int
+        最大継承深度, by default 5
+    max_class_methods : int
+        最大クラスメソッド数, by default 20
+    """
 
     max_inheritance_depth: int = 5
     max_class_methods: int = 20
@@ -20,10 +29,17 @@ class StructAnalysisConfig(BaseAnalysisConfig):
 class DecoratorType(StrEnum):
     """
     デコレータタイプ
-    * staticmethod
-    * classmethod
-    * abstractmethod
-    * property
+
+    Attributes
+    ----------
+    STATIC_METHOD : str
+        staticmethodデコレータ
+    CLASS_METHOD : str
+        classmethodデコレータ
+    ABSTRACT_METHOD : str
+        abstractmethodデコレータ
+    PROPERTY : str
+        propertyデコレータ
     """
 
     STATIC_METHOD = "staticmethod"
@@ -35,26 +51,43 @@ class DecoratorType(StrEnum):
 class StructAnalysisResult(BaseAnalysisResult):
     """
     解析結果(構造)
-    * 関数数
-    * クラス数
-    * 行数
-    * 引数の平均数
-        * 1関数あたりの平均引数数
-    * 戻り値の型ヒント割合
-    * staticmethod割合
-    * classmethod割合
-    * abstractmethod割合
-    * property割合
-    * メソッド数
-        * クラス内の平均メソッド数
-    * 属性数
-        * クラス内の平均属性数
-    * メソッド比率(public/private)
-        * クラス内のメソッド比率
-    * 依存度
-    * 凝集度
-    * クラス継承関係の深さの平均
-    * 子クラス数の平均
+
+    Attributes
+    ----------
+    function_count : int
+        関数数
+    class_count : int
+        クラス数
+    line_count : int
+        行数
+    argument_count : float
+        引数の平均数（1関数あたりの平均引数数）
+    return_type_hint : float
+        戻り値の型ヒント割合
+    staticmethod_rate : float
+        staticmethod割合
+    class_method_rate : float
+        classmethod割合
+    abstractmethod_rate : float
+        abstractmethod割合
+    property_rate : float
+        property割合
+    method_count : float
+        メソッド数（クラス内の平均メソッド数）
+    attribute_count : float
+        属性数（クラス内の平均属性数）
+    public_rate : float
+        publicメソッド比率
+    private_rate : float
+        privateメソッド比率
+    dependency : float
+        依存度
+    cohesion : float
+        凝集度
+    inheritance_depth : float
+        クラス継承関係の深さの平均
+    subclass_count : float
+        子クラス数の平均
     """
 
     function_count: int
@@ -77,18 +110,50 @@ class StructAnalysisResult(BaseAnalysisResult):
 
 
 class Struct(AbstractAnalysis[StructAnalysisResult, StructAnalysisConfig]):
-    """解析クラス(構造)"""
+    """
+    解析クラス(構造)
+
+    Notes
+    -----
+    コードの構造を多角的に解析するクラス
+    """
 
     def __init__(self, config: StructAnalysisConfig | None = None) -> None:
-        """コンストラクタ"""
+        """
+        コンストラクタ
+
+        Parameters
+        ----------
+        config : StructAnalysisConfig | None, optional
+            構造解析設定, by default None
+        """
         super().__init__(config)
 
     def get_default_config(self) -> StructAnalysisConfig:
-        """デフォルト設定を取得"""
+        """
+        デフォルト設定を取得
+
+        Returns
+        -------
+        StructAnalysisConfig
+            デフォルトの構造解析設定
+        """
         return StructAnalysisConfig()
 
     def analyze(self, source_code: str) -> StructAnalysisResult:
-        """コード解析"""
+        """
+        コード解析
+
+        Parameters
+        ----------
+        source_code : str
+            解析対象のソースコード
+
+        Returns
+        -------
+        StructAnalysisResult
+            構造解析結果
+        """
         tree: ast.AST = self.parse_source_code(source_code)
         if not self.config.enabled:
             return StructAnalysisResult(
@@ -149,27 +214,93 @@ class Struct(AbstractAnalysis[StructAnalysisResult, StructAnalysisConfig]):
         )
 
     def parse_source_code(self, source_code: str) -> ast.AST:
-        """ソースコードを解析"""
+        """
+        ソースコードを解析
+
+        Parameters
+        ----------
+        source_code : str
+            解析対象のソースコード
+
+        Returns
+        -------
+        ast.AST
+            解析済みのAST
+        """
         return ast.parse(source_code)
 
     def get_function_count(self, source_code: str, tree: ast.AST | None = None) -> int:
-        """関数数を取得"""
+        """
+        関数数を取得
+
+        Parameters
+        ----------
+        source_code : str
+            解析対象のソースコード
+        tree : ast.AST | None, optional
+            解析済みのAST, by default None
+
+        Returns
+        -------
+        int
+            関数数
+        """
         tree = tree or self.parse_source_code(source_code)
         return sum(isinstance(node, ast.FunctionDef) for node in ast.walk(tree))
 
     def get_class_count(self, source_code: str, tree: ast.AST | None = None) -> int:
-        """クラス数を取得"""
+        """
+        クラス数を取得
+
+        Parameters
+        ----------
+        source_code : str
+            解析対象のソースコード
+        tree : ast.AST | None, optional
+            解析済みのAST, by default None
+
+        Returns
+        -------
+        int
+            クラス数
+        """
         tree = tree or self.parse_source_code(source_code)
         return sum(isinstance(node, ast.ClassDef) for node in ast.walk(tree))
 
     def get_line_count(self, source_code: str) -> int:
-        """行数を取得"""
+        """
+        行数を取得
+
+        Parameters
+        ----------
+        source_code : str
+            解析対象のソースコード
+
+        Returns
+        -------
+        int
+            行数
+        """
         return len(source_code.splitlines())
 
     def get_argument_count(
         self, source_code: str, tree: ast.AST | None = None
     ) -> float:
-        """引数の数を取得"""
+        """
+        引数の数を取得
+
+        Parameters
+        ----------
+        source_code : str
+            解析対象のソースコード
+        tree : ast.AST | None, optional
+            解析済みのAST, by default None
+
+        Returns
+        -------
+        float
+            引数の平均数
+        """
         tree = tree or self.parse_source_code(source_code)
         total_argument_count = sum(
             isinstance(node, ast.arg)
@@ -185,7 +316,21 @@ class Struct(AbstractAnalysis[StructAnalysisResult, StructAnalysisConfig]):
     def get_return_type_hint(
         self, source_code: str, tree: ast.AST | None = None
     ) -> float:
-        """戻り値の型ヒント割合を取得"""
+        """
+        戻り値の型ヒント割合を取得
+
+        Parameters
+        ----------
+        source_code : str
+            解析対象のソースコード
+        tree : ast.AST | None, optional
+            解析済みのAST, by default None
+
+        Returns
+        -------
+        float
+            戻り値の型ヒント割合
+        """
         tree = tree or self.parse_source_code(source_code)
         return_hint_count = sum(
             1
@@ -204,7 +349,23 @@ class Struct(AbstractAnalysis[StructAnalysisResult, StructAnalysisConfig]):
         decorator_type: DecoratorType,
         tree: ast.AST | None = None,
     ) -> float:
-        """デコレータ数を取得"""
+        """
+        デコレータ数を取得
+
+        Parameters
+        ----------
+        source_code : str
+            解析対象のソースコード
+        decorator_type : DecoratorType
+            デコレータタイプ
+        tree : ast.AST | None, optional
+            解析済みのAST, by default None
+
+        Returns
+        -------
+        float
+            デコレータ使用率
+        """
         tree = tree or self.parse_source_code(source_code)
         decorator_count = sum(
             1
@@ -226,7 +387,22 @@ class Struct(AbstractAnalysis[StructAnalysisResult, StructAnalysisConfig]):
     ) -> tuple[float, float, float, float]:
         """
         クラス情報を取得
-        * クラス内のメソッド数・要素数・public/private比率を取得
+
+        Parameters
+        ----------
+        source_code : str
+            解析対象のソースコード
+        tree : ast.AST | None, optional
+            解析済みのAST, by default None
+
+        Returns
+        -------
+        tuple[float, float, float, float]
+            (メソッド数, 属性数, public比率, private比率)
+
+        Notes
+        -----
+        クラス内のメソッド数・要素数・public/private比率を取得
         """
         tree = tree or self.parse_source_code(source_code)
         method_count = 0
@@ -258,7 +434,21 @@ class Struct(AbstractAnalysis[StructAnalysisResult, StructAnalysisConfig]):
         return 0, 0, 0, 0
 
     def get_dependency(self, source_code: str, tree: ast.AST | None = None) -> float:
-        """依存度を平均呼び出し数で算出"""
+        """
+        依存度を平均呼び出し数で算出
+
+        Parameters
+        ----------
+        source_code : str
+            解析対象のソースコード
+        tree : ast.AST | None, optional
+            解析済みのAST, by default None
+
+        Returns
+        -------
+        float
+            依存度
+        """
         tree = tree or ast.parse(source_code)
         graph = defaultdict(set)
 
@@ -290,7 +480,21 @@ class Struct(AbstractAnalysis[StructAnalysisResult, StructAnalysisConfig]):
         return total_calls / num_funcs
 
     def get_cohesion(self, source_code: str, tree: ast.AST | None = None) -> float:
-        """凝集度をLCOMベースで算出"""
+        """
+        凝集度をLCOMベースで算出
+
+        Parameters
+        ----------
+        source_code : str
+            解析対象のソースコード
+        tree : ast.AST | None, optional
+            解析済みのAST, by default None
+
+        Returns
+        -------
+        float
+            凝集度
+        """
         tree = tree or self.parse_source_code(source_code)
 
         # 各メソッドが参照する属性
@@ -334,8 +538,22 @@ class Struct(AbstractAnalysis[StructAnalysisResult, StructAnalysisConfig]):
     ) -> tuple[float, float]:
         """
         クラス継承関係情報を取得
-        * クラス継承関係の深さ
-        * 子クラス数
+
+        Parameters
+        ----------
+        source_code : str
+            解析対象のソースコード
+        tree : ast.AST | None, optional
+            解析済みのAST, by default None
+
+        Returns
+        -------
+        tuple[float, float]
+            (継承深度, 子クラス数)
+
+        Notes
+        -----
+        クラス継承関係の深さと子クラス数を取得
         """
         tree = tree or self.parse_source_code(source_code)
         inheritance: dict[str, list[str]] = {}

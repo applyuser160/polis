@@ -13,7 +13,18 @@ from code_insight.code_analysis.abstract import (
 
 
 class RedundancyAnalysisConfig(BaseAnalysisConfig):
-    """冗長度解析設定"""
+    """
+    冗長度解析設定
+
+    Attributes
+    ----------
+    long_function_lines_threshold : int
+        長大関数の行数閾値, by default 50
+    long_function_complexity_threshold : int
+        長大関数の複雑度閾値, by default 10
+    ignored_function_names : set[str]
+        無視する関数名, by default {"main", "__init__", "__main__"}
+    """
 
     long_function_lines_threshold: int = 50
     long_function_complexity_threshold: int = 10
@@ -23,12 +34,15 @@ class RedundancyAnalysisConfig(BaseAnalysisConfig):
 class RedundancyAnalysisResult(BaseAnalysisResult):
     """
     解析結果(冗長度)
-    * 重複コード割合
-        * 構造的に類似した関数の割合
-    * 未使用コード割合
-        * 定義されているが呼び出されていない関数・クラスの割合
-    * 長大関数割合
-        * 50行以上または循環的複雑度10以上の関数の割合
+
+    Attributes
+    ----------
+    duplicate_code_rate : float
+        重複コード割合（構造的に類似した関数の割合）
+    unused_code_rate : float
+        未使用コード割合（定義されているが呼び出されていない関数・クラスの割合）
+    long_function_rate : float
+        長大関数割合（50行以上または循環的複雑度10以上の関数の割合）
     """
 
     duplicate_code_rate: float
@@ -37,18 +51,50 @@ class RedundancyAnalysisResult(BaseAnalysisResult):
 
 
 class Redundancy(AbstractAnalysis[RedundancyAnalysisResult, RedundancyAnalysisConfig]):
-    """解析クラス(冗長度)"""
+    """
+    解析クラス(冗長度)
+
+    Notes
+    -----
+    コードの冗長度を多角的に解析するクラス
+    """
 
     def __init__(self, config: RedundancyAnalysisConfig | None = None) -> None:
-        """コンストラクタ"""
+        """
+        コンストラクタ
+
+        Parameters
+        ----------
+        config : RedundancyAnalysisConfig | None, optional
+            冗長度解析設定, by default None
+        """
         super().__init__(config)
 
     def get_default_config(self) -> RedundancyAnalysisConfig:
-        """デフォルト設定を取得"""
+        """
+        デフォルト設定を取得
+
+        Returns
+        -------
+        RedundancyAnalysisConfig
+            デフォルトの冗長度解析設定
+        """
         return RedundancyAnalysisConfig()
 
     def analyze(self, source_code: str) -> RedundancyAnalysisResult:
-        """コード解析"""
+        """
+        コード解析
+
+        Parameters
+        ----------
+        source_code : str
+            解析対象のソースコード
+
+        Returns
+        -------
+        RedundancyAnalysisResult
+            冗長度解析結果
+        """
         if not self.config.enabled:
             return RedundancyAnalysisResult(
                 duplicate_code_rate=0.0,
@@ -64,13 +110,39 @@ class Redundancy(AbstractAnalysis[RedundancyAnalysisResult, RedundancyAnalysisCo
         )
 
     def parse_source_code(self, source_code: str) -> ast.AST:
-        """ソースコードを解析"""
+        """
+        ソースコードを解析
+
+        Parameters
+        ----------
+        source_code : str
+            解析対象のソースコード
+
+        Returns
+        -------
+        ast.AST
+            解析済みのAST
+        """
         return ast.parse(source_code)
 
     def get_duplicate_code_rate(
         self, source_code: str, tree: ast.AST | None = None
     ) -> float:
-        """重複コード割合を取得"""
+        """
+        重複コード割合を取得
+
+        Parameters
+        ----------
+        source_code : str
+            解析対象のソースコード
+        tree : ast.AST | None, optional
+            解析済みのAST, by default None
+
+        Returns
+        -------
+        float
+            重複コード割合
+        """
         if not source_code.strip():
             return 0.0
 
@@ -98,7 +170,21 @@ class Redundancy(AbstractAnalysis[RedundancyAnalysisResult, RedundancyAnalysisCo
     def get_unused_code_rate(
         self, source_code: str, tree: ast.AST | None = None
     ) -> float:
-        """未使用コード割合を取得"""
+        """
+        未使用コード割合を取得
+
+        Parameters
+        ----------
+        source_code : str
+            解析対象のソースコード
+        tree : ast.AST | None, optional
+            解析済みのAST, by default None
+
+        Returns
+        -------
+        float
+            未使用コード割合
+        """
         if not source_code.strip():
             return 0.0
 
@@ -127,7 +213,21 @@ class Redundancy(AbstractAnalysis[RedundancyAnalysisResult, RedundancyAnalysisCo
     def get_long_function_rate(
         self, source_code: str, tree: ast.AST | None = None
     ) -> float:
-        """長大関数割合を取得"""
+        """
+        長大関数割合を取得
+
+        Parameters
+        ----------
+        source_code : str
+            解析対象のソースコード
+        tree : ast.AST | None, optional
+            解析済みのAST, by default None
+
+        Returns
+        -------
+        float
+            長大関数割合
+        """
         if not source_code.strip():
             return 0.0
 
@@ -162,7 +262,19 @@ class Redundancy(AbstractAnalysis[RedundancyAnalysisResult, RedundancyAnalysisCo
         return long_functions / total_functions
 
     def _get_function_structure_hash(self, func_node: ast.FunctionDef) -> str:
-        """関数の構造的ハッシュを取得"""
+        """
+        関数の構造的ハッシュを取得
+
+        Parameters
+        ----------
+        func_node : ast.FunctionDef
+            関数定義ノード
+
+        Returns
+        -------
+        str
+            構造的ハッシュ値
+        """
         structure_elements = []
 
         for node in ast.walk(func_node):
@@ -200,7 +312,21 @@ class Redundancy(AbstractAnalysis[RedundancyAnalysisResult, RedundancyAnalysisCo
     def _count_function_lines(
         self, func_node: ast.FunctionDef, source_code: str
     ) -> int:
-        """関数の行数をカウント"""
+        """
+        関数の行数をカウント
+
+        Parameters
+        ----------
+        func_node : ast.FunctionDef
+            関数定義ノード
+        source_code : str
+            ソースコード
+
+        Returns
+        -------
+        int
+            関数の行数
+        """
         if hasattr(func_node, "end_lineno") and func_node.end_lineno:
             return func_node.end_lineno - func_node.lineno + 1
 
