@@ -36,10 +36,11 @@ class Redundancy(AbstractAnalysis[RedundancyAnalysisResult]):
 
     def analyze(self, source_code: str) -> RedundancyAnalysisResult:
         """コード解析"""
+        tree = self.parse_source_code(source_code)
         return RedundancyAnalysisResult(
-            duplicate_code_rate=self.get_duplicate_code_rate(source_code),
-            unused_code_rate=self.get_unused_code_rate(source_code),
-            long_function_rate=self.get_long_function_rate(source_code),
+            duplicate_code_rate=self.get_duplicate_code_rate(source_code, tree),
+            unused_code_rate=self.get_unused_code_rate(source_code, tree),
+            long_function_rate=self.get_long_function_rate(source_code, tree),
             cyclomatic_complexity=self.get_cyclomatic_complexity(source_code),
             maintainability_index=self.get_maintainability_index(source_code),
         )
@@ -48,12 +49,14 @@ class Redundancy(AbstractAnalysis[RedundancyAnalysisResult]):
         """ソースコードを解析"""
         return ast.parse(source_code)
 
-    def get_duplicate_code_rate(self, source_code: str) -> float:
+    def get_duplicate_code_rate(
+        self, source_code: str, tree: ast.AST | None = None
+    ) -> float:
         """重複コード割合を取得"""
         if not source_code.strip():
             return 0.0
 
-        tree = self.parse_source_code(source_code)
+        tree = tree or self.parse_source_code(source_code)
         function_hashes: Dict[str, List[str]] = defaultdict(list)
         total_functions = 0
 
@@ -74,12 +77,14 @@ class Redundancy(AbstractAnalysis[RedundancyAnalysisResult]):
 
         return duplicate_functions / total_functions
 
-    def get_unused_code_rate(self, source_code: str) -> float:
+    def get_unused_code_rate(
+        self, source_code: str, tree: ast.AST | None = None
+    ) -> float:
         """未使用コード割合を取得"""
         if not source_code.strip():
             return 0.0
 
-        tree = self.parse_source_code(source_code)
+        tree = tree or self.parse_source_code(source_code)
         defined_names: Set[str] = set()
         called_names: Set[str] = set()
 
@@ -101,12 +106,14 @@ class Redundancy(AbstractAnalysis[RedundancyAnalysisResult]):
         unused_names = defined_names - called_names
         return len(unused_names) / len(defined_names)
 
-    def get_long_function_rate(self, source_code: str) -> float:
+    def get_long_function_rate(
+        self, source_code: str, tree: ast.AST | None = None
+    ) -> float:
         """長大関数割合を取得"""
         if not source_code.strip():
             return 0.0
 
-        tree = self.parse_source_code(source_code)
+        tree = tree or self.parse_source_code(source_code)
         long_functions = 0
         total_functions = 0
 

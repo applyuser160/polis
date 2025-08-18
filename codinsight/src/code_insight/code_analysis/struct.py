@@ -70,37 +70,40 @@ class Struct(AbstractAnalysis[StructAnalysisResult]):
 
     def analyze(self, source_code: str) -> StructAnalysisResult:
         """コード解析"""
+        tree: ast.AST = self.parse_source_code(source_code)
         (
             method_count,
             attribute_count,
             public_rate,
             private_rate,
-        ) = self.get_class_information(source_code=source_code)
+        ) = self.get_class_information(source_code=source_code, tree=tree)
         inheritance_depth, subclass_count = self.get_inheritance_information(
-            source_code=source_code
+            source_code=source_code, tree=tree
         )
         return StructAnalysisResult(
-            function_count=self.get_function_count(source_code),
-            class_count=self.get_class_count(source_code),
+            function_count=self.get_function_count(source_code, tree),
+            class_count=self.get_class_count(source_code, tree),
             line_count=self.get_line_count(source_code),
-            argument_count=self.get_argument_count(source_code),
-            return_type_hint=self.get_return_type_hint(source_code),
+            argument_count=self.get_argument_count(source_code, tree),
+            return_type_hint=self.get_return_type_hint(source_code, tree),
             staticmethod_rate=self.get_decorator_rate(
-                source_code, DecoratorType.STATIC_METHOD
+                source_code, DecoratorType.STATIC_METHOD, tree
             ),
             class_method_rate=self.get_decorator_rate(
-                source_code, DecoratorType.CLASS_METHOD
+                source_code, DecoratorType.CLASS_METHOD, tree
             ),
             abstractmethod_rate=self.get_decorator_rate(
-                source_code, DecoratorType.ABSTRACT_METHOD
+                source_code, DecoratorType.ABSTRACT_METHOD, tree
             ),
-            property_rate=self.get_decorator_rate(source_code, DecoratorType.PROPERTY),
+            property_rate=self.get_decorator_rate(
+                source_code, DecoratorType.PROPERTY, tree
+            ),
             method_count=method_count,
             attribute_count=attribute_count,
             public_rate=public_rate,
             private_rate=private_rate,
-            dependency=self.get_dependency(source_code),
-            cohesion=self.get_cohesion(source_code),
+            dependency=self.get_dependency(source_code, tree),
+            cohesion=self.get_cohesion(source_code, tree),
             inheritance_depth=inheritance_depth,
             subclass_count=subclass_count,
         )
@@ -109,23 +112,25 @@ class Struct(AbstractAnalysis[StructAnalysisResult]):
         """ソースコードを解析"""
         return ast.parse(source_code)
 
-    def get_function_count(self, source_code: str) -> int:
+    def get_function_count(self, source_code: str, tree: ast.AST | None = None) -> int:
         """関数数を取得"""
-        tree: ast.AST = self.parse_source_code(source_code)
+        tree = tree or self.parse_source_code(source_code)
         return sum(isinstance(node, ast.FunctionDef) for node in ast.walk(tree))
 
-    def get_class_count(self, source_code: str) -> int:
+    def get_class_count(self, source_code: str, tree: ast.AST | None = None) -> int:
         """クラス数を取得"""
-        tree: ast.AST = self.parse_source_code(source_code)
+        tree = tree or self.parse_source_code(source_code)
         return sum(isinstance(node, ast.ClassDef) for node in ast.walk(tree))
 
     def get_line_count(self, source_code: str) -> int:
         """行数を取得"""
         return len(source_code.splitlines())
 
-    def get_argument_count(self, source_code: str) -> float:
+    def get_argument_count(
+        self, source_code: str, tree: ast.AST | None = None
+    ) -> float:
         """引数の数を取得"""
-        tree: ast.AST = self.parse_source_code(source_code)
+        tree = tree or self.parse_source_code(source_code)
         total_argument_count = sum(
             isinstance(node, ast.arg)
             for node in ast.walk(tree)
@@ -137,25 +142,30 @@ class Struct(AbstractAnalysis[StructAnalysisResult]):
 
         return 0
 
-    def get_return_type_hint(self, source_code: str) -> float:
+    def get_return_type_hint(
+        self, source_code: str, tree: ast.AST | None = None
+    ) -> float:
         """戻り値の型ヒント割合を取得"""
-        tree: ast.AST = self.parse_source_code(source_code)
+        tree = tree or self.parse_source_code(source_code)
         return_hint_count = sum(
             1
             for node in ast.walk(tree)
             if isinstance(node, ast.FunctionDef) and node.returns is not None
         )
 
-        if function_count := self.get_function_count(source_code):
+        if function_count := self.get_function_count(source_code, tree):
             return return_hint_count / function_count
 
         return 0
 
     def get_decorator_rate(
-        self, source_code: str, decorator_type: DecoratorType
+        self,
+        source_code: str,
+        decorator_type: DecoratorType,
+        tree: ast.AST | None = None,
     ) -> float:
         """デコレータ数を取得"""
-        tree: ast.AST = self.parse_source_code(source_code)
+        tree = tree or self.parse_source_code(source_code)
         decorator_count = sum(
             1
             for node in ast.walk(tree)
@@ -166,19 +176,19 @@ class Struct(AbstractAnalysis[StructAnalysisResult]):
             )
         )
 
-        if function_count := self.get_function_count(source_code):
+        if function_count := self.get_function_count(source_code, tree):
             return decorator_count / function_count
 
         return 0
 
     def get_class_information(
-        self, source_code: str
+        self, source_code: str, tree: ast.AST | None = None
     ) -> tuple[float, float, float, float]:
         """
         クラス情報を取得
         * クラス内のメソッド数・要素数・public/private比率を取得
         """
-        tree: ast.AST = self.parse_source_code(source_code)
+        tree = tree or self.parse_source_code(source_code)
         method_count = 0
         attribute_count = 0
         public_count = 0
@@ -197,7 +207,7 @@ class Struct(AbstractAnalysis[StructAnalysisResult]):
                         attribute_count += 1
 
         if method_count:
-            class_count = self.get_class_count(source_code)
+            class_count = self.get_class_count(source_code, tree)
             return (
                 method_count / class_count,
                 attribute_count / class_count,
@@ -207,9 +217,9 @@ class Struct(AbstractAnalysis[StructAnalysisResult]):
 
         return 0, 0, 0, 0
 
-    def get_dependency(self, source_code: str) -> float:
+    def get_dependency(self, source_code: str, tree: ast.AST | None = None) -> float:
         """依存度を平均呼び出し数で算出"""
-        tree = ast.parse(source_code)
+        tree = tree or ast.parse(source_code)
         graph = defaultdict(set)
 
         class Visitor(ast.NodeVisitor):
@@ -239,9 +249,9 @@ class Struct(AbstractAnalysis[StructAnalysisResult]):
 
         return total_calls / num_funcs
 
-    def get_cohesion(self, source_code: str) -> float:
+    def get_cohesion(self, source_code: str, tree: ast.AST | None = None) -> float:
         """凝集度をLCOMベースで算出"""
-        tree: ast.AST = self.parse_source_code(source_code)
+        tree = tree or self.parse_source_code(source_code)
 
         # 各メソッドが参照する属性
         attr_usage = defaultdict(set)
@@ -279,13 +289,15 @@ class Struct(AbstractAnalysis[StructAnalysisResult]):
 
         return shared / total if total > 0 else 1.0
 
-    def get_inheritance_information(self, source_code: str) -> tuple[float, float]:
+    def get_inheritance_information(
+        self, source_code: str, tree: ast.AST | None = None
+    ) -> tuple[float, float]:
         """
         クラス継承関係情報を取得
         * クラス継承関係の深さ
         * 子クラス数
         """
-        tree: ast.AST = self.parse_source_code(source_code)
+        tree = tree or self.parse_source_code(source_code)
         inheritance: dict[str, list[str]] = {}
         children = defaultdict(list)
 
