@@ -1,3 +1,4 @@
+"""複数ファイル解析モジュール."""
 from __future__ import annotations
 
 import os
@@ -14,14 +15,36 @@ DEFAULT_EXCLUDES: set[str] = {"node_modules", "target", ".git", ".venv", "__pyca
 
 
 class FileAnalysisResult(BaseModel):
-    """単一ファイルの解析結果モデル"""
+    """
+    単一ファイルの解析結果モデル.
+
+    Attributes
+    ----------
+    path : str
+        解析対象ファイルのパス
+    results : dict[str, dict[str, Any]]
+        解析結果の辞書
+    """
 
     path: str
     results: dict[str, dict[str, Any]]
 
 
 class AggregateStats(BaseModel):
-    """解析全体の集約統計モデル"""
+    """
+    解析全体の集約統計モデル.
+
+    Attributes
+    ----------
+    total_files : int
+        総ファイル数
+    analyzed_files : int
+        解析済みファイル数
+    errors : list[str]
+        エラーが発生したファイルのリスト
+    by_type_avg : dict[str, dict[str, float]]
+        解析タイプ別の平均値
+    """
 
     total_files: int
     analyzed_files: int
@@ -30,17 +53,48 @@ class AggregateStats(BaseModel):
 
 
 class MultiAnalysisResult(BaseModel):
-    """複数ファイル解析の結果モデル"""
+    """
+    複数ファイル解析の結果モデル.
+
+    Attributes
+    ----------
+    files : list[FileAnalysisResult]
+        ファイル別解析結果のリスト
+    aggregate : AggregateStats
+        集約統計
+    """
 
     files: list[FileAnalysisResult]
     aggregate: AggregateStats
 
     def to_json(self) -> str:
-        """JSON文字列へのシリアライズ"""
+        """
+        JSON文字列へのシリアライズ.
+
+        Returns
+        -------
+        str
+            JSON文字列
+        """
         return self.model_dump_json()
 
 
 def _is_excluded(path: Path, excludes: set[str]) -> bool:
+    """
+    パスが除外対象かどうかを判定.
+
+    Parameters
+    ----------
+    path : Path
+        判定対象のパス
+    excludes : set[str]
+        除外パターンのセット
+
+    Returns
+    -------
+    bool
+        除外対象の場合True
+    """
     parts = set(path.parts)
     return any(ex in parts for ex in excludes)
 
@@ -50,7 +104,23 @@ def collect_paths(
     exts: set[str] | None = None,
     excludes: set[str] | None = None,
 ) -> list[Path]:
-    """入力から解析対象ファイルパスを再帰収集"""
+    """
+    入力から解析対象ファイルパスを再帰収集.
+
+    Parameters
+    ----------
+    inputs : Iterable[str]
+        入力パスのリスト
+    exts : set[str] | None, optional
+        対象拡張子のセット, by default None
+    excludes : set[str] | None, optional
+        除外パターンのセット, by default None
+
+    Returns
+    -------
+    list[Path]
+        収集されたファイルパスのリスト
+    """
     exts = exts or DEFAULT_EXTS
     excludes = excludes or DEFAULT_EXCLUDES
 
@@ -82,7 +152,23 @@ def collect_paths(
 def analyze_file(
     path: Path, types: list[CodeAnalysisType], configs: AnalysisConfigs | None = None
 ) -> FileAnalysisResult:
-    """単一ファイルを解析して結果を返却"""
+    """
+    単一ファイルを解析して結果を返却.
+
+    Parameters
+    ----------
+    path : Path
+        解析対象ファイルのパス
+    types : list[CodeAnalysisType]
+        実行する解析タイプのリスト
+    configs : AnalysisConfigs | None, optional
+        解析設定, by default None
+
+    Returns
+    -------
+    FileAnalysisResult
+        ファイル解析結果
+    """
     source_code = path.read_text(encoding="utf-8", errors="ignore")
     analysis = CodeAnalysis(source_code=source_code, configs=configs)
     result_map = analysis.analyze(types)
@@ -96,6 +182,19 @@ def analyze_file(
 def _aggregate_numeric_means(
     files: list[FileAnalysisResult],
 ) -> dict[str, dict[str, float]]:
+    """
+    数値メトリクスの平均値を集約.
+
+    Parameters
+    ----------
+    files : list[FileAnalysisResult]
+        ファイル解析結果のリスト
+
+    Returns
+    -------
+    dict[str, dict[str, float]]
+        解析タイプ別の平均値辞書
+    """
     by_type: dict[str, dict[str, list[float]]] = {}
 
     for fa in files:
@@ -116,7 +215,18 @@ def _aggregate_numeric_means(
 
 
 class MultiFileAnalyzer:
-    """複数ファイル解析の管理クラス"""
+    """
+    複数ファイル解析の管理クラス.
+
+    Attributes
+    ----------
+    exts : set[str]
+        対象拡張子のセット
+    excludes : set[str]
+        除外パターンのセット
+    configs : AnalysisConfigs | None
+        解析設定
+    """
 
     exts: set[str]
     excludes: set[str]
@@ -128,7 +238,18 @@ class MultiFileAnalyzer:
         excludes: set[str] | None = None,
         configs: AnalysisConfigs | None = None,
     ) -> None:
-        """コンストラクタ"""
+        """
+        コンストラクタ.
+
+        Parameters
+        ----------
+        exts : set[str] | None, optional
+            対象拡張子のセット, by default None
+        excludes : set[str] | None, optional
+            除外パターンのセット, by default None
+        configs : AnalysisConfigs | None, optional
+            解析設定, by default None
+        """
         self.exts = exts or DEFAULT_EXTS
         self.excludes = excludes or DEFAULT_EXCLUDES
         self.configs = configs
@@ -138,7 +259,21 @@ class MultiFileAnalyzer:
         inputs: list[str],
         types: list[CodeAnalysisType],
     ) -> MultiAnalysisResult:
-        """入力パス群を解析して結果を返却"""
+        """
+        入力パス群を解析して結果を返却.
+
+        Parameters
+        ----------
+        inputs : list[str]
+            入力パスのリスト
+        types : list[CodeAnalysisType]
+            実行する解析タイプのリスト
+
+        Returns
+        -------
+        MultiAnalysisResult
+            複数ファイル解析結果
+        """
         paths = collect_paths(inputs=inputs, exts=self.exts, excludes=self.excludes)
         files: list[FileAnalysisResult] = []
         errors: list[str] = []
@@ -165,6 +300,26 @@ def analyze_paths(
     excludes: set[str] | None = None,
     configs: AnalysisConfigs | None = None,
 ) -> MultiAnalysisResult:
-    """関数APIによる複数ファイル解析の実行"""
+    """
+    関数APIによる複数ファイル解析の実行.
+
+    Parameters
+    ----------
+    inputs : list[str]
+        入力パスのリスト
+    types : list[CodeAnalysisType]
+        実行する解析タイプのリスト
+    exts : set[str] | None, optional
+        対象拡張子のセット, by default None
+    excludes : set[str] | None, optional
+        除外パターンのセット, by default None
+    configs : AnalysisConfigs | None, optional
+        解析設定, by default None
+
+    Returns
+    -------
+    MultiAnalysisResult
+        複数ファイル解析結果
+    """
     analyzer = MultiFileAnalyzer(exts=exts, excludes=excludes, configs=configs)
     return analyzer.analyze(inputs=inputs, types=types)

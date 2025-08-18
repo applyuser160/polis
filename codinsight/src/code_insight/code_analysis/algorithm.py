@@ -1,3 +1,4 @@
+"""アルゴリズム解析モジュール."""
 import ast
 from typing import Set
 
@@ -10,9 +11,14 @@ from code_insight.code_analysis.abstract import (
 
 class AlgorithmAnalysisConfig(BaseAnalysisConfig):
     """
-    アルゴリズム解析設定
-    * 最大ネスト深度閾値
-    * サイクロマティック複雑度閾値
+    アルゴリズム解析設定.
+
+    Attributes
+    ----------
+    max_nesting_depth_threshold : int
+        最大ネスト深度閾値, by default 4
+    cyclomatic_complexity_threshold : float
+        サイクロマティック複雑度閾値, by default 5.0
     """
 
     max_nesting_depth_threshold: int = 4
@@ -21,20 +27,28 @@ class AlgorithmAnalysisConfig(BaseAnalysisConfig):
 
 class AlgorithmAnalysisResult(BaseAnalysisResult):
     """
-    解析結果(アルゴリズム)
-    * 制御構文
-        * if文の数
-        * for文の数
-        * while文の数
-        * try-except文の数
-    * 再帰構造
-        * 再帰関数の割合
-    * FP的要素
-        * lambda式の数
-        * リスト内包表記の数
-        * map/filter/reduce呼び出しの数
-    * ネスト深度
-        * 制御構文の最大ネスト深度
+    解析結果(アルゴリズム).
+
+    Attributes
+    ----------
+    if_count : int
+        if文の数
+    for_count : int
+        for文の数
+    while_count : int
+        while文の数
+    try_count : int
+        try-except文の数
+    recursion_rate : float
+        再帰関数の割合
+    lambda_count : int
+        lambda式の数
+    comprehension_count : int
+        リスト内包表記の数
+    functional_call_count : int
+        map/filter/reduce呼び出しの数
+    max_nesting_depth : int
+        制御構文の最大ネスト深度
     """
 
     if_count: int
@@ -49,18 +63,50 @@ class AlgorithmAnalysisResult(BaseAnalysisResult):
 
 
 class Algorithm(AbstractAnalysis[AlgorithmAnalysisResult, AlgorithmAnalysisConfig]):
-    """解析クラス(アルゴリズム)"""
+    """
+    解析クラス(アルゴリズム).
+
+    Notes
+    -----
+    コードのアルゴリズム的特徴を多角的に解析するクラス
+    """
 
     def __init__(self, config: AlgorithmAnalysisConfig | None = None) -> None:
-        """コンストラクタ"""
+        """
+        コンストラクタ.
+
+        Parameters
+        ----------
+        config : AlgorithmAnalysisConfig | None, optional
+            アルゴリズム解析設定, by default None
+        """
         super().__init__(config)
 
     def get_default_config(self) -> AlgorithmAnalysisConfig:
-        """デフォルト設定を取得"""
+        """
+        デフォルト設定を取得.
+
+        Returns
+        -------
+        AlgorithmAnalysisConfig
+            デフォルトのアルゴリズム解析設定
+        """
         return AlgorithmAnalysisConfig()
 
     def analyze(self, source_code: str) -> AlgorithmAnalysisResult:
-        """コード解析"""
+        """
+        コード解析.
+
+        Parameters
+        ----------
+        source_code : str
+            解析対象のソースコード
+
+        Returns
+        -------
+        AlgorithmAnalysisResult
+            アルゴリズム解析結果
+        """
         if not self.config.enabled:
             return AlgorithmAnalysisResult(
                 if_count=0,
@@ -89,33 +135,115 @@ class Algorithm(AbstractAnalysis[AlgorithmAnalysisResult, AlgorithmAnalysisConfi
         )
 
     def parse_source_code(self, source_code: str) -> ast.AST:
-        """ソースコードを解析"""
+        """
+        ソースコードを解析.
+
+        Parameters
+        ----------
+        source_code : str
+            解析対象のソースコード
+
+        Returns
+        -------
+        ast.AST
+            解析済みのAST
+        """
         return ast.parse(source_code)
 
     def get_if_count(self, source_code: str, tree: ast.AST | None = None) -> int:
-        """if文の数を取得"""
+        """
+        if文の数を取得.
+
+        Parameters
+        ----------
+        source_code : str
+            解析対象のソースコード
+        tree : ast.AST | None, optional
+            解析済みのAST, by default None
+
+        Returns
+        -------
+        int
+            if文の数
+        """
         tree = tree or self.parse_source_code(source_code)
         return sum(isinstance(node, ast.If) for node in ast.walk(tree))
 
     def get_for_count(self, source_code: str, tree: ast.AST | None = None) -> int:
-        """for文の数を取得"""
+        """
+        for文の数を取得.
+
+        Parameters
+        ----------
+        source_code : str
+            解析対象のソースコード
+        tree : ast.AST | None, optional
+            解析済みのAST, by default None
+
+        Returns
+        -------
+        int
+            for文の数
+        """
         tree = tree or self.parse_source_code(source_code)
         return sum(isinstance(node, (ast.For, ast.AsyncFor)) for node in ast.walk(tree))
 
     def get_while_count(self, source_code: str, tree: ast.AST | None = None) -> int:
-        """while文の数を取得"""
+        """
+        while文の数を取得.
+
+        Parameters
+        ----------
+        source_code : str
+            解析対象のソースコード
+        tree : ast.AST | None, optional
+            解析済みのAST, by default None
+
+        Returns
+        -------
+        int
+            while文の数
+        """
         tree = tree or self.parse_source_code(source_code)
         return sum(isinstance(node, ast.While) for node in ast.walk(tree))
 
     def get_try_count(self, source_code: str, tree: ast.AST | None = None) -> int:
-        """try-except文の数を取得"""
+        """
+        try-except文の数を取得.
+
+        Parameters
+        ----------
+        source_code : str
+            解析対象のソースコード
+        tree : ast.AST | None, optional
+            解析済みのAST, by default None
+
+        Returns
+        -------
+        int
+            try-except文の数
+        """
         tree = tree or self.parse_source_code(source_code)
         return sum(isinstance(node, ast.Try) for node in ast.walk(tree))
 
     def get_recursion_rate(
         self, source_code: str, tree: ast.AST | None = None
     ) -> float:
-        """再帰関数の割合を取得"""
+        """
+        再帰関数の割合を取得.
+
+        Parameters
+        ----------
+        source_code : str
+            解析対象のソースコード
+        tree : ast.AST | None, optional
+            解析済みのAST, by default None
+
+        Returns
+        -------
+        float
+            再帰関数の割合
+        """
         tree = tree or self.parse_source_code(source_code)
         function_names: Set[str] = set()
         recursive_functions: Set[str] = set()
@@ -139,14 +267,42 @@ class Algorithm(AbstractAnalysis[AlgorithmAnalysisResult, AlgorithmAnalysisConfi
         return 0.0
 
     def get_lambda_count(self, source_code: str, tree: ast.AST | None = None) -> int:
-        """lambda式の数を取得"""
+        """
+        lambda式の数を取得.
+
+        Parameters
+        ----------
+        source_code : str
+            解析対象のソースコード
+        tree : ast.AST | None, optional
+            解析済みのAST, by default None
+
+        Returns
+        -------
+        int
+            lambda式の数
+        """
         tree = tree or self.parse_source_code(source_code)
         return sum(isinstance(node, ast.Lambda) for node in ast.walk(tree))
 
     def get_comprehension_count(
         self, source_code: str, tree: ast.AST | None = None
     ) -> int:
-        """内包表記の数を取得"""
+        """
+        内包表記の数を取得.
+
+        Parameters
+        ----------
+        source_code : str
+            解析対象のソースコード
+        tree : ast.AST | None, optional
+            解析済みのAST, by default None
+
+        Returns
+        -------
+        int
+            内包表記の数
+        """
         tree = tree or self.parse_source_code(source_code)
         return sum(
             isinstance(
@@ -158,7 +314,21 @@ class Algorithm(AbstractAnalysis[AlgorithmAnalysisResult, AlgorithmAnalysisConfi
     def get_functional_call_count(
         self, source_code: str, tree: ast.AST | None = None
     ) -> int:
-        """map/filter/reduce呼び出しの数を取得"""
+        """
+        map/filter/reduce呼び出しの数を取得.
+
+        Parameters
+        ----------
+        source_code : str
+            解析対象のソースコード
+        tree : ast.AST | None, optional
+            解析済みのAST, by default None
+
+        Returns
+        -------
+        int
+            map/filter/reduce呼び出しの数
+        """
         tree = tree or self.parse_source_code(source_code)
         functional_names = {"map", "filter", "reduce"}
         count = 0
@@ -176,7 +346,21 @@ class Algorithm(AbstractAnalysis[AlgorithmAnalysisResult, AlgorithmAnalysisConfi
     def get_cyclomatic_complexity(
         self, source_code: str, tree: ast.AST | None = None
     ) -> float:
-        """循環的複雑度の平均を取得"""
+        """
+        循環的複雑度の平均を取得.
+
+        Parameters
+        ----------
+        source_code : str
+            解析対象のソースコード
+        tree : ast.AST | None, optional
+            解析済みのAST, by default None
+
+        Returns
+        -------
+        float
+            循環的複雑度の平均
+        """
         tree = tree or self.parse_source_code(source_code)
         complexities = []
 
@@ -188,7 +372,19 @@ class Algorithm(AbstractAnalysis[AlgorithmAnalysisResult, AlgorithmAnalysisConfi
         return sum(complexities) / len(complexities) if complexities else 0.0
 
     def _calculate_function_complexity(self, func_node: ast.FunctionDef) -> int:
-        """関数の循環的複雑度を計算"""
+        """
+        関数の循環的複雑度を計算.
+
+        Parameters
+        ----------
+        func_node : ast.FunctionDef
+            関数定義ノード
+
+        Returns
+        -------
+        int
+            循環的複雑度
+        """
         complexity = 1
 
         for node in ast.walk(func_node):
@@ -204,7 +400,21 @@ class Algorithm(AbstractAnalysis[AlgorithmAnalysisResult, AlgorithmAnalysisConfi
     def get_max_nesting_depth(
         self, source_code: str, tree: ast.AST | None = None
     ) -> int:
-        """制御構文の最大ネスト深度を取得"""
+        """
+        制御構文の最大ネスト深度を取得.
+
+        Parameters
+        ----------
+        source_code : str
+            解析対象のソースコード
+        tree : ast.AST | None, optional
+            解析済みのAST, by default None
+
+        Returns
+        -------
+        int
+            最大ネスト深度
+        """
         tree = tree or self.parse_source_code(source_code)
         max_depth = 0
 

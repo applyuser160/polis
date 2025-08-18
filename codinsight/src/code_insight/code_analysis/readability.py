@@ -1,3 +1,4 @@
+"""コード可読性解析モジュール."""
 import ast
 import math
 import re
@@ -11,7 +12,18 @@ from code_insight.code_analysis.complexity import Complexity
 
 
 class ReadabilityAnalysisConfig(BaseAnalysisConfig):
-    """可読性解析設定"""
+    """
+    可読性解析設定.
+
+    Attributes
+    ----------
+    max_line_length_threshold : int
+        最大行長の閾値, by default 88
+    min_variable_name_length : int
+        最小変数名長, by default 3
+    identifier_complexity_threshold : float
+        識別子複雑度の閾値, by default 0.3
+    """
 
     max_line_length_threshold: int = 88
     min_variable_name_length: int = 3
@@ -20,21 +32,28 @@ class ReadabilityAnalysisConfig(BaseAnalysisConfig):
 
 class ReadabilityAnalysisResult(BaseAnalysisResult):
     """
-    解析結果(可読性)
-    * 変数名の長さ
-        * 変数名の平均長
-        * 変数名の最大長
-    * 行の長さ
-        * 行の平均長
-        * 行の最大長
-    * 情報量
-        * Halstead Volume
-        * Halstead Difficulty
-        * Halstead Effort
-    * ネスト深度
-        * 平均ネスト深度
-    * 識別子複雑度
-        * 略語使用率や複雑な命名パターンの割合
+    解析結果(可読性).
+
+    Attributes
+    ----------
+    variable_name_length : float
+        変数名の平均長
+    max_variable_name_length : int
+        変数名の最大長
+    line_length : float
+        行の平均長
+    max_line_length : int
+        行の最大長
+    halstead_volume : float
+        Halstead Volume（情報量）
+    halstead_difficulty : float
+        Halstead Difficulty（情報量）
+    halstead_effort : float
+        Halstead Effort（情報量）
+    nesting_depth : float
+        平均ネスト深度
+    identifier_complexity : float
+        識別子複雑度（略語使用率や複雑な命名パターンの割合）
     """
 
     variable_name_length: float
@@ -51,19 +70,51 @@ class ReadabilityAnalysisResult(BaseAnalysisResult):
 class Readability(
     AbstractAnalysis[ReadabilityAnalysisResult, ReadabilityAnalysisConfig]
 ):
-    """解析クラス(可読性)"""
+    """
+    解析クラス(可読性).
+
+    Notes
+    -----
+    コードの可読性を多角的に解析するクラス
+    """
 
     def __init__(self, config: ReadabilityAnalysisConfig | None = None) -> None:
-        """コンストラクタ"""
+        """
+        コンストラクタ.
+
+        Parameters
+        ----------
+        config : ReadabilityAnalysisConfig | None, optional
+            可読性解析設定, by default None
+        """
         super().__init__(config)
         self._complexity = Complexity()
 
     def get_default_config(self) -> ReadabilityAnalysisConfig:
-        """デフォルト設定を取得"""
+        """
+        デフォルト設定を取得.
+
+        Returns
+        -------
+        ReadabilityAnalysisConfig
+            デフォルトの可読性解析設定
+        """
         return ReadabilityAnalysisConfig()
 
     def analyze(self, source_code: str) -> ReadabilityAnalysisResult:
-        """コード解析"""
+        """
+        コード解析.
+
+        Parameters
+        ----------
+        source_code : str
+            解析対象のソースコード
+
+        Returns
+        -------
+        ReadabilityAnalysisResult
+            可読性解析結果
+        """
         tree = self.parse_source_code(source_code)
         if not self.config.enabled:
             return ReadabilityAnalysisResult(
@@ -93,13 +144,39 @@ class Readability(
         )
 
     def parse_source_code(self, source_code: str) -> ast.AST:
-        """ソースコードを解析"""
+        """
+        ソースコードを解析.
+
+        Parameters
+        ----------
+        source_code : str
+            解析対象のソースコード
+
+        Returns
+        -------
+        ast.AST
+            解析済みのAST
+        """
         return ast.parse(source_code)
 
     def get_variable_names(
         self, source_code: str, tree: ast.AST | None = None
     ) -> list[str]:
-        """変数名を抽出"""
+        """
+        変数名を抽出.
+
+        Parameters
+        ----------
+        source_code : str
+            解析対象のソースコード
+        tree : ast.AST | None, optional
+            解析済みのAST, by default None
+
+        Returns
+        -------
+        list[str]
+            変数名のリスト
+        """
         if not source_code.strip() and tree is None:
             return []
 
@@ -119,7 +196,21 @@ class Readability(
     def get_variable_name_length(
         self, source_code: str, tree: ast.AST | None = None
     ) -> float:
-        """変数名の平均長を取得"""
+        """
+        変数名の平均長を取得.
+
+        Parameters
+        ----------
+        source_code : str
+            解析対象のソースコード
+        tree : ast.AST | None, optional
+            解析済みのAST, by default None
+
+        Returns
+        -------
+        float
+            変数名の平均長
+        """
         variable_names = self.get_variable_names(source_code, tree)
         if not variable_names:
             return 0.0
@@ -130,7 +221,21 @@ class Readability(
     def get_max_variable_name_length(
         self, source_code: str, tree: ast.AST | None = None
     ) -> int:
-        """変数名の最大長を取得"""
+        """
+        変数名の最大長を取得.
+
+        Parameters
+        ----------
+        source_code : str
+            解析対象のソースコード
+        tree : ast.AST | None, optional
+            解析済みのAST, by default None
+
+        Returns
+        -------
+        int
+            変数名の最大長
+        """
         variable_names = self.get_variable_names(source_code, tree)
         if not variable_names:
             return 0
@@ -138,7 +243,19 @@ class Readability(
         return max(len(name) for name in variable_names)
 
     def get_line_length(self, source_code: str) -> float:
-        """行の平均長を取得"""
+        """
+        行の平均長を取得.
+
+        Parameters
+        ----------
+        source_code : str
+            解析対象のソースコード
+
+        Returns
+        -------
+        float
+            行の平均長
+        """
         lines = source_code.splitlines()
         if not lines:
             return 0.0
@@ -147,7 +264,19 @@ class Readability(
         return total_length / len(lines)
 
     def get_max_line_length(self, source_code: str) -> int:
-        """行の最大長を取得"""
+        """
+        行の最大長を取得.
+
+        Parameters
+        ----------
+        source_code : str
+            解析対象のソースコード
+
+        Returns
+        -------
+        int
+            行の最大長
+        """
         lines = source_code.splitlines()
         if not lines:
             return 0
@@ -157,7 +286,21 @@ class Readability(
     def get_halstead_metrics(
         self, source_code: str, tree: ast.AST | None = None
     ) -> tuple[int, int, int, int]:
-        """Halstead メトリクスの基本値を取得"""
+        """
+        Halstead メトリクスの基本値を取得.
+
+        Parameters
+        ----------
+        source_code : str
+            解析対象のソースコード
+        tree : ast.AST | None, optional
+            解析済みのAST, by default None
+
+        Returns
+        -------
+        tuple[int, int, int, int]
+            (n1, n2, N1, N2) - 演算子・オペランドの種類数と総数
+        """
         if not source_code.strip() and tree is None:
             return 0, 0, 0, 0
 
@@ -242,7 +385,21 @@ class Readability(
     def get_halstead_volume(
         self, source_code: str, tree: ast.AST | None = None
     ) -> float:
-        """Halstead Volume を計算"""
+        """
+        Halstead Volume を計算.
+
+        Parameters
+        ----------
+        source_code : str
+            解析対象のソースコード
+        tree : ast.AST | None, optional
+            解析済みのAST, by default None
+
+        Returns
+        -------
+        float
+            Halstead Volume値
+        """
         n1, n2, N1, N2 = self.get_halstead_metrics(source_code, tree)
 
         if n1 + n2 == 0:
@@ -256,7 +413,21 @@ class Readability(
     def get_halstead_difficulty(
         self, source_code: str, tree: ast.AST | None = None
     ) -> float:
-        """Halstead Difficulty を計算"""
+        """
+        Halstead Difficulty を計算.
+
+        Parameters
+        ----------
+        source_code : str
+            解析対象のソースコード
+        tree : ast.AST | None, optional
+            解析済みのAST, by default None
+
+        Returns
+        -------
+        float
+            Halstead Difficulty値
+        """
         n1, n2, N1, N2 = self.get_halstead_metrics(source_code, tree)
 
         if n2 == 0:
@@ -267,14 +438,42 @@ class Readability(
     def get_halstead_effort(
         self, source_code: str, tree: ast.AST | None = None
     ) -> float:
-        """Halstead Effort を計算"""
+        """
+        Halstead Effort を計算.
+
+        Parameters
+        ----------
+        source_code : str
+            解析対象のソースコード
+        tree : ast.AST | None, optional
+            解析済みのAST, by default None
+
+        Returns
+        -------
+        float
+            Halstead Effort値
+        """
         volume = self.get_halstead_volume(source_code, tree)
         difficulty = self.get_halstead_difficulty(source_code, tree)
 
         return volume * difficulty
 
     def get_nesting_depth(self, source_code: str, tree: ast.AST | None = None) -> float:
-        """平均ネスト深度を取得"""
+        """
+        平均ネスト深度を取得.
+
+        Parameters
+        ----------
+        source_code : str
+            解析対象のソースコード
+        tree : ast.AST | None, optional
+            解析済みのAST, by default None
+
+        Returns
+        -------
+        float
+            平均ネスト深度
+        """
         if not source_code.strip() and tree is None:
             return 0.0
 
@@ -310,7 +509,21 @@ class Readability(
     def get_identifier_complexity(
         self, source_code: str, tree: ast.AST | None = None
     ) -> float:
-        """識別子複雑度を取得"""
+        """
+        識別子複雑度を取得.
+
+        Parameters
+        ----------
+        source_code : str
+            解析対象のソースコード
+        tree : ast.AST | None, optional
+            解析済みのAST, by default None
+
+        Returns
+        -------
+        float
+            識別子複雑度
+        """
         variable_names = self.get_variable_names(source_code, tree)
         if not variable_names:
             return 0.0
