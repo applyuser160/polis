@@ -1,7 +1,6 @@
 import ast
 import math
 import re
-from typing import Optional
 
 from code_insight.code_analysis.abstract import (
     AbstractAnalysis,
@@ -53,7 +52,7 @@ class Readability(
 ):
     """解析クラス(可読性)"""
 
-    def __init__(self, config: Optional[ReadabilityAnalysisConfig] = None) -> None:
+    def __init__(self, config: ReadabilityAnalysisConfig | None = None) -> None:
         """コンストラクタ"""
         super().__init__(config)
 

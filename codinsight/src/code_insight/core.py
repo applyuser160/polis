@@ -1,5 +1,5 @@
 from enum import StrEnum, auto
-from typing import Any, Optional, Type
+from typing import Any, Type
 
 from pydantic import BaseModel
 
@@ -23,13 +23,13 @@ from code_insight.code_analysis.style import Style, StyleAnalysisConfig
 class AnalysisConfigs(BaseModel):
     """全解析エンジンの設定"""
 
-    style: Optional[StyleAnalysisConfig] = None
-    struct: Optional[StructAnalysisConfig] = None
-    readability: Optional[ReadabilityAnalysisConfig] = None
-    redundancy: Optional[RedundancyAnalysisConfig] = None
-    algorithm: Optional[AlgorithmAnalysisConfig] = None
-    complexity: Optional[ComplexityAnalysisConfig] = None
-    quality: Optional[QualityAnalysisConfig] = None
+    style: StyleAnalysisConfig | None = None
+    struct: StructAnalysisConfig | None = None
+    readability: ReadabilityAnalysisConfig | None = None
+    redundancy: RedundancyAnalysisConfig | None = None
+    algorithm: AlgorithmAnalysisConfig | None = None
+    complexity: ComplexityAnalysisConfig | None = None
+    quality: QualityAnalysisConfig | None = None
 
 
 class CodeAnalysisType(StrEnum):
@@ -54,7 +54,7 @@ class CodeAnalysisType(StrEnum):
 
     @staticmethod
     def get_code_analysis_class(
-        type: str, config: Optional[BaseAnalysisConfig] = None
+        type: str, config: BaseAnalysisConfig | None = None
     ) -> AbstractAnalysis[Any, Any]:
         """コード解析クラスを取得"""
         if type == CodeAnalysisType.STYLE:
@@ -79,10 +79,10 @@ class CodeAnalysis:
     """コード解析"""
 
     source_code: str
-    configs: Optional[AnalysisConfigs]
+    configs: AnalysisConfigs | None
 
     def __init__(
-        self, source_code: str, configs: Optional[AnalysisConfigs] = None
+        self, source_code: str, configs: AnalysisConfigs | None = None
     ) -> None:
         """コンストラクタ"""
         self.source_code = source_code
@@ -102,7 +102,7 @@ class CodeAnalysis:
 
     def _get_config_for_type(
         self, analysis_type: CodeAnalysisType
-    ) -> Optional[BaseAnalysisConfig]:
+    ) -> BaseAnalysisConfig | None:
         """解析タイプに対応する設定を取得"""
         if not self.configs:
             return None

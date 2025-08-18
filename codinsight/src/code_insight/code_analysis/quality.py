@@ -1,6 +1,5 @@
 import ast
 import re
-from typing import Optional
 
 from code_insight.code_analysis.abstract import (
     AbstractAnalysis,
@@ -46,7 +45,7 @@ class QualityAnalysisResult(BaseAnalysisResult):
 class Quality(AbstractAnalysis[QualityAnalysisResult, QualityAnalysisConfig]):
     """解析クラス(品質)"""
 
-    def __init__(self, config: Optional[QualityAnalysisConfig] = None) -> None:
+    def __init__(self, config: QualityAnalysisConfig | None = None) -> None:
         """コンストラクタ"""
         super().__init__(config)
 

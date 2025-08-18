@@ -2,7 +2,6 @@ import ast
 import itertools
 from collections import defaultdict
 from enum import StrEnum
-from typing import Optional
 
 from code_insight.code_analysis.abstract import (
     AbstractAnalysis,
@@ -80,7 +79,7 @@ class StructAnalysisResult(BaseAnalysisResult):
 class Struct(AbstractAnalysis[StructAnalysisResult, StructAnalysisConfig]):
     """解析クラス(構造)"""
 
-    def __init__(self, config: Optional[StructAnalysisConfig] = None) -> None:
+    def __init__(self, config: StructAnalysisConfig | None = None) -> None:
         """コンストラクタ"""
         super().__init__(config)
 

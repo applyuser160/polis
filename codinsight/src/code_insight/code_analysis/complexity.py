@@ -1,5 +1,4 @@
 import ast
-from typing import Optional
 
 import radon.complexity as cc
 import radon.metrics as metrics
@@ -46,7 +45,7 @@ class ComplexityAnalysisResult(BaseAnalysisResult):
 class Complexity(AbstractAnalysis[ComplexityAnalysisResult, ComplexityAnalysisConfig]):
     """解析クラス(複雑度)"""
 
-    def __init__(self, config: Optional[ComplexityAnalysisConfig] = None) -> None:
+    def __init__(self, config: ComplexityAnalysisConfig | None = None) -> None:
         """コンストラクタ"""
         super().__init__(config)
 

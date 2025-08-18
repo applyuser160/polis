@@ -1,5 +1,5 @@
 import ast
-from typing import Optional, Set
+from typing import Set
 
 from code_insight.code_analysis.abstract import (
     AbstractAnalysis,
@@ -9,7 +9,11 @@ from code_insight.code_analysis.abstract import (
 
 
 class AlgorithmAnalysisConfig(BaseAnalysisConfig):
-    """アルゴリズム解析設定"""
+    """
+    アルゴリズム解析設定
+    * 最大ネスト深度閾値
+    * サイクロマティック複雑度閾値
+    """
 
     max_nesting_depth_threshold: int = 4
     cyclomatic_complexity_threshold: float = 5.0
@@ -50,7 +54,7 @@ class AlgorithmAnalysisResult(BaseAnalysisResult):
 class Algorithm(AbstractAnalysis[AlgorithmAnalysisResult, AlgorithmAnalysisConfig]):
     """解析クラス(アルゴリズム)"""
 
-    def __init__(self, config: Optional[AlgorithmAnalysisConfig] = None) -> None:
+    def __init__(self, config: AlgorithmAnalysisConfig | None = None) -> None:
         """コンストラクタ"""
         super().__init__(config)
 

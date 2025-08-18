@@ -1,6 +1,5 @@
 import ast
 import re
-from typing import Optional
 
 import pycodestyle
 
@@ -40,7 +39,7 @@ class StyleAnalysisResult(BaseAnalysisResult):
 class Style(AbstractAnalysis[StyleAnalysisResult, StyleAnalysisConfig]):
     """解析クラス(スタイル)"""
 
-    def __init__(self, config: Optional[StyleAnalysisConfig] = None) -> None:
+    def __init__(self, config: StyleAnalysisConfig | None = None) -> None:
         """コンストラクタ"""
         super().__init__(config)
 

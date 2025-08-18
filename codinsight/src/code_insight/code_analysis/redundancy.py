@@ -1,7 +1,7 @@
 import ast
 import hashlib
 from collections import defaultdict
-from typing import Any, Dict, List, Optional, Set
+from typing import Any, Dict, List, Set
 
 from radon.complexity import cc_visit
 from radon.metrics import mi_visit
@@ -46,7 +46,7 @@ class RedundancyAnalysisResult(BaseAnalysisResult):
 class Redundancy(AbstractAnalysis[RedundancyAnalysisResult, RedundancyAnalysisConfig]):
     """解析クラス(冗長度)"""
 
-    def __init__(self, config: Optional[RedundancyAnalysisConfig] = None) -> None:
+    def __init__(self, config: RedundancyAnalysisConfig | None = None) -> None:
         """コンストラクタ"""
         super().__init__(config)
 

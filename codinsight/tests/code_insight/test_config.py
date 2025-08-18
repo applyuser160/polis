@@ -56,15 +56,15 @@ def test_disabled_analysis() -> None:
 
 def test_redundancy_config() -> None:
     """冗長度解析設定のテスト"""
-    source_code = """
-def long_function():
-    for i in range(100):
-        if i % 2 == 0:
-            for j in range(50):
-                print(i, j)
-                if j > 10:
-                    break
-"""
+    source_code = (
+        "def long_function():\n"
+        "    for i in range(100):\n"
+        "        if i % 2 == 0:\n"
+        "            for j in range(50):\n"
+        "                print(i, j)\n"
+        "                if j > 10:\n"
+        "                    break\n"
+    )
 
     analysis_default = CodeAnalysis(source_code)
     result_default = analysis_default.analyze([CodeAnalysisType.REDUNDANCY])
@@ -126,16 +126,16 @@ def test_multi_file_analyzer_config() -> None:
 
 def test_ignored_function_names_config() -> None:
     """無視対象関数名設定のテスト"""
-    source_code = """
-def main():
-    pass
-
-def custom_init():
-    pass
-
-def regular_function():
-    pass
-"""
+    source_code = (
+        "def main():\n"
+        "    pass\n"
+        "\n"
+        "def custom_init():\n"
+        "    pass\n"
+        "\n"
+        "def regular_function():\n"
+        "    pass\n"
+    )
 
     configs = AnalysisConfigs(
         redundancy=RedundancyAnalysisConfig(

@@ -2,7 +2,7 @@ from __future__ import annotations
 
 import os
 from pathlib import Path
-from typing import Any, Iterable, Optional, cast
+from typing import Any, Iterable, cast
 
 from pydantic import BaseModel
 
@@ -80,7 +80,7 @@ def collect_paths(
 
 
 def analyze_file(
-    path: Path, types: list[CodeAnalysisType], configs: Optional[AnalysisConfigs] = None
+    path: Path, types: list[CodeAnalysisType], configs: AnalysisConfigs | None = None
 ) -> FileAnalysisResult:
     """単一ファイルを解析して結果を返却"""
     source_code = path.read_text(encoding="utf-8", errors="ignore")
@@ -120,13 +120,13 @@ class MultiFileAnalyzer:
 
     exts: set[str]
     excludes: set[str]
-    configs: Optional[AnalysisConfigs]
+    configs: AnalysisConfigs | None
 
     def __init__(
         self,
         exts: set[str] | None = None,
         excludes: set[str] | None = None,
-        configs: Optional[AnalysisConfigs] = None,
+        configs: AnalysisConfigs | None = None,
     ) -> None:
         """コンストラクタ"""
         self.exts = exts or DEFAULT_EXTS
@@ -163,7 +163,7 @@ def analyze_paths(
     types: list[CodeAnalysisType],
     exts: set[str] | None = None,
     excludes: set[str] | None = None,
-    configs: Optional[AnalysisConfigs] = None,
+    configs: AnalysisConfigs | None = None,
 ) -> MultiAnalysisResult:
     """関数APIによる複数ファイル解析の実行"""
     analyzer = MultiFileAnalyzer(exts=exts, excludes=excludes, configs=configs)
