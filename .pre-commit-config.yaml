@@ -51,8 +51,15 @@ repos:
     rev: 6.3.0
     hooks:
       - id: pydocstyle
+        args: ["--convention=numpy"]
         language_version: python3
         files: ^codinsight/src/
+
+  - repo: https://github.com/terrencepreilly/darglint
+    rev: v1.8.1
+    hooks:
+      - id: darglint
+        args: ["-s", "numpy"]
 
   # セキュリティチェック: bandit
   - repo: https://github.com/PyCQA/bandit
