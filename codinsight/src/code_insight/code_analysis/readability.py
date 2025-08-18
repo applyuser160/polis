@@ -2,7 +2,19 @@ import ast
 import math
 import re
 
-from code_insight.code_analysis.abstract import AbstractAnalysis, BaseAnalysisResult
+from code_insight.code_analysis.abstract import (
+    AbstractAnalysis,
+    BaseAnalysisConfig,
+    BaseAnalysisResult,
+)
+
+
+class ReadabilityAnalysisConfig(BaseAnalysisConfig):
+    """可読性解析設定"""
+
+    max_line_length_threshold: int = 88
+    min_variable_name_length: int = 3
+    identifier_complexity_threshold: float = 0.3
 
 
 class ReadabilityAnalysisResult(BaseAnalysisResult):
@@ -35,11 +47,34 @@ class ReadabilityAnalysisResult(BaseAnalysisResult):
     identifier_complexity: float
 
 
-class Readability(AbstractAnalysis[ReadabilityAnalysisResult]):
+class Readability(
+    AbstractAnalysis[ReadabilityAnalysisResult, ReadabilityAnalysisConfig]
+):
     """解析クラス(可読性)"""
+
+    def __init__(self, config: ReadabilityAnalysisConfig | None = None) -> None:
+        """コンストラクタ"""
+        super().__init__(config)
+
+    def get_default_config(self) -> ReadabilityAnalysisConfig:
+        """デフォルト設定を取得"""
+        return ReadabilityAnalysisConfig()
 
     def analyze(self, source_code: str) -> ReadabilityAnalysisResult:
         """コード解析"""
+        if not self.config.enabled:
+            return ReadabilityAnalysisResult(
+                variable_name_length=0.0,
+                max_variable_name_length=0,
+                line_length=0.0,
+                max_line_length=0,
+                halstead_volume=0.0,
+                halstead_difficulty=0.0,
+                halstead_effort=0.0,
+                nesting_depth=0.0,
+                identifier_complexity=0.0,
+            )
+
         return ReadabilityAnalysisResult(
             variable_name_length=self.get_variable_name_length(source_code),
             max_variable_name_length=self.get_max_variable_name_length(source_code),
@@ -262,7 +297,7 @@ class Readability(AbstractAnalysis[ReadabilityAnalysisResult]):
         complex_count = 0
 
         for name in variable_names:
-            if len(name) <= 2:
+            if len(name) <= self.config.min_variable_name_length - 1:
                 complex_count += 1
             elif re.search(r"[A-Z]{2,}", name):
                 complex_count += 1

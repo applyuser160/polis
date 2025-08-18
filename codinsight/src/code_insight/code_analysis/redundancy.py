@@ -6,7 +6,19 @@ from typing import Any, Dict, List, Set
 from radon.complexity import cc_visit
 from radon.metrics import mi_visit
 
-from code_insight.code_analysis.abstract import AbstractAnalysis, BaseAnalysisResult
+from code_insight.code_analysis.abstract import (
+    AbstractAnalysis,
+    BaseAnalysisConfig,
+    BaseAnalysisResult,
+)
+
+
+class RedundancyAnalysisConfig(BaseAnalysisConfig):
+    """冗長度解析設定"""
+
+    long_function_lines_threshold: int = 50
+    long_function_complexity_threshold: int = 10
+    ignored_function_names: set[str] = {"main", "__init__", "__main__"}
 
 
 class RedundancyAnalysisResult(BaseAnalysisResult):
@@ -31,11 +43,28 @@ class RedundancyAnalysisResult(BaseAnalysisResult):
     maintainability_index: float
 
 
-class Redundancy(AbstractAnalysis[RedundancyAnalysisResult]):
+class Redundancy(AbstractAnalysis[RedundancyAnalysisResult, RedundancyAnalysisConfig]):
     """解析クラス(冗長度)"""
+
+    def __init__(self, config: RedundancyAnalysisConfig | None = None) -> None:
+        """コンストラクタ"""
+        super().__init__(config)
+
+    def get_default_config(self) -> RedundancyAnalysisConfig:
+        """デフォルト設定を取得"""
+        return RedundancyAnalysisConfig()
 
     def analyze(self, source_code: str) -> RedundancyAnalysisResult:
         """コード解析"""
+        if not self.config.enabled:
+            return RedundancyAnalysisResult(
+                duplicate_code_rate=0.0,
+                unused_code_rate=0.0,
+                long_function_rate=0.0,
+                cyclomatic_complexity=0.0,
+                maintainability_index=0.0,
+            )
+
         return RedundancyAnalysisResult(
             duplicate_code_rate=self.get_duplicate_code_rate(source_code),
             unused_code_rate=self.get_unused_code_rate(source_code),
@@ -85,7 +114,7 @@ class Redundancy(AbstractAnalysis[RedundancyAnalysisResult]):
 
         for node in ast.walk(tree):
             if isinstance(node, ast.FunctionDef):
-                if node.name not in ["main", "__init__", "__main__"]:
+                if node.name not in self.config.ignored_function_names:
                     defined_names.add(node.name)
             elif isinstance(node, ast.ClassDef):
                 defined_names.add(node.name)
@@ -125,7 +154,10 @@ class Redundancy(AbstractAnalysis[RedundancyAnalysisResult]):
                 func_lines = self._count_function_lines(node, source_code)
                 func_complexity = complexity_map.get(node.name, 1)
 
-                if func_lines >= 50 or func_complexity >= 10:
+                if (
+                    func_lines >= self.config.long_function_lines_threshold
+                    or func_complexity >= self.config.long_function_complexity_threshold
+                ):
                     long_functions += 1
 
         if total_functions == 0:
