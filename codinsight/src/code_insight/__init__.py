@@ -22,7 +22,7 @@ from .code_analysis.redundancy import (
 from .code_analysis.struct import Struct, StructAnalysisConfig, StructAnalysisResult
 from .code_analysis.style import Style, StyleAnalysisConfig, StyleAnalysisResult
 from .core import AnalysisConfigs, CodeAnalysis, CodeAnalysisType
-from .multi_analysis import MultiAnalysisResult, MultiFileAnalyzer
+from .multi_analysis import FileAnalysisResult, MultiAnalysisResult, MultiFileAnalyzer
 from .trend_analysis.trend_analysis import TrendAnalysis
 
 __all__ = [
@@ -31,6 +31,7 @@ __all__ = [
     "AnalysisConfigs",
     "MultiFileAnalyzer",
     "MultiAnalysisResult",
+    "FileAnalysisResult",
     "Readability",
     "ReadabilityAnalysisResult",
     "ReadabilityAnalysisConfig",
