@@ -49,6 +49,7 @@ class Style(AbstractAnalysis[StyleAnalysisResult, StyleAnalysisConfig]):
 
     def analyze(self, source_code: str) -> StyleAnalysisResult:
         """コード解析"""
+        tree = ast.parse(source_code)
         if not self.config.enabled:
             return StyleAnalysisResult(
                 naming_convention=0.0,
@@ -58,22 +59,22 @@ class Style(AbstractAnalysis[StyleAnalysisResult, StyleAnalysisConfig]):
             )
 
         return StyleAnalysisResult(
-            naming_convention=self.get_naming_convention(source_code),
+            naming_convention=self.get_naming_convention(source_code, tree),
             comment_rate=self.get_comment_rate(source_code),
-            docstring_rate=self.get_docstring_rate(source_code),
+            docstring_rate=self.get_docstring_rate(source_code, tree),
             pep8_violation_rate=self.get_pep8_violation_rate(source_code),
         )
 
-    def get_naming_convention(self, source_code: str) -> float:
+    def get_naming_convention(
+        self, source_code: str, tree: ast.AST | None = None
+    ) -> float:
         """命名規則の一貫性を取得"""
-        tree = ast.parse(source_code)
+        tree = tree or ast.parse(source_code)
         violations = 0
         for node in ast.walk(tree):
-            # 関数名チェック
             if isinstance(node, ast.FunctionDef):
                 if not re.match(self.config.function_name_pattern, node.name):
                     violations += 1
-            # クラス名チェック
             if isinstance(node, ast.ClassDef):
                 if not re.match(self.config.class_name_pattern, node.name):
                     violations += 1
@@ -95,9 +96,11 @@ class Style(AbstractAnalysis[StyleAnalysisResult, StyleAnalysisConfig]):
 
         return 0
 
-    def get_docstring_rate(self, source_code: str) -> float:
+    def get_docstring_rate(
+        self, source_code: str, tree: ast.AST | None = None
+    ) -> float:
         """docstringの割合を取得"""
-        tree = ast.parse(source_code)
+        tree = tree or ast.parse(source_code)
 
         doc_count = 0
         for node in ast.walk(tree):

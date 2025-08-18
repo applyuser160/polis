@@ -1,4 +1,5 @@
 import ast
+import math
 import re
 
 from code_insight.code_analysis.abstract import (
@@ -63,6 +64,7 @@ class Readability(
 
     def analyze(self, source_code: str) -> ReadabilityAnalysisResult:
         """コード解析"""
+        tree = self.parse_source_code(source_code)
         if not self.config.enabled:
             return ReadabilityAnalysisResult(
                 variable_name_length=0.0,
@@ -77,27 +79,31 @@ class Readability(
             )
 
         return ReadabilityAnalysisResult(
-            variable_name_length=self.get_variable_name_length(source_code),
-            max_variable_name_length=self.get_max_variable_name_length(source_code),
+            variable_name_length=self.get_variable_name_length(source_code, tree),
+            max_variable_name_length=self.get_max_variable_name_length(
+                source_code, tree
+            ),
             line_length=self.get_line_length(source_code),
             max_line_length=self.get_max_line_length(source_code),
-            halstead_volume=self._complexity.get_halstead_volume(source_code),
-            halstead_difficulty=self._complexity.get_halstead_difficulty(source_code),
-            halstead_effort=self._complexity.get_halstead_effort(source_code),
-            nesting_depth=self.get_nesting_depth(source_code),
-            identifier_complexity=self.get_identifier_complexity(source_code),
+            halstead_volume=self.get_halstead_volume(source_code, tree),
+            halstead_difficulty=self.get_halstead_difficulty(source_code, tree),
+            halstead_effort=self.get_halstead_effort(source_code, tree),
+            nesting_depth=self.get_nesting_depth(source_code, tree),
+            identifier_complexity=self.get_identifier_complexity(source_code, tree),
         )
 
     def parse_source_code(self, source_code: str) -> ast.AST:
         """ソースコードを解析"""
         return ast.parse(source_code)
 
-    def get_variable_names(self, source_code: str) -> list[str]:
+    def get_variable_names(
+        self, source_code: str, tree: ast.AST | None = None
+    ) -> list[str]:
         """変数名を抽出"""
-        if not source_code.strip():
+        if not source_code.strip() and tree is None:
             return []
 
-        tree = self.parse_source_code(source_code)
+        tree = tree or self.parse_source_code(source_code)
         variable_names = []
 
         for node in ast.walk(tree):
@@ -110,18 +116,22 @@ class Readability(
 
         return variable_names
 
-    def get_variable_name_length(self, source_code: str) -> float:
+    def get_variable_name_length(
+        self, source_code: str, tree: ast.AST | None = None
+    ) -> float:
         """変数名の平均長を取得"""
-        variable_names = self.get_variable_names(source_code)
+        variable_names = self.get_variable_names(source_code, tree)
         if not variable_names:
             return 0.0
 
         total_length = sum(len(name) for name in variable_names)
         return total_length / len(variable_names)
 
-    def get_max_variable_name_length(self, source_code: str) -> int:
+    def get_max_variable_name_length(
+        self, source_code: str, tree: ast.AST | None = None
+    ) -> int:
         """変数名の最大長を取得"""
-        variable_names = self.get_variable_names(source_code)
+        variable_names = self.get_variable_names(source_code, tree)
         if not variable_names:
             return 0
 
@@ -144,13 +154,131 @@ class Readability(
 
         return max(len(line) for line in lines)
 
+    def get_halstead_metrics(
+        self, source_code: str, tree: ast.AST | None = None
+    ) -> tuple[int, int, int, int]:
+        """Halstead メトリクスの基本値を取得"""
+        if not source_code.strip() and tree is None:
+            return 0, 0, 0, 0
 
-    def get_nesting_depth(self, source_code: str) -> float:
-        """平均ネスト深度を取得"""
-        if not source_code.strip():
+        tree = tree or self.parse_source_code(source_code)
+
+        operators = set()
+        operands = set()
+        operator_count = 0
+        operand_count = 0
+
+        for node in ast.walk(tree):
+            if isinstance(
+                node,
+                (
+                    ast.Add,
+                    ast.Sub,
+                    ast.Mult,
+                    ast.Div,
+                    ast.Mod,
+                    ast.Pow,
+                    ast.LShift,
+                    ast.RShift,
+                    ast.BitOr,
+                    ast.BitXor,
+                    ast.BitAnd,
+                    ast.FloorDiv,
+                ),
+            ):
+                operators.add(type(node).__name__)
+                operator_count += 1
+            elif isinstance(
+                node,
+                (
+                    ast.And,
+                    ast.Or,
+                    ast.Not,
+                    ast.Eq,
+                    ast.NotEq,
+                    ast.Lt,
+                    ast.LtE,
+                    ast.Gt,
+                    ast.GtE,
+                    ast.Is,
+                    ast.IsNot,
+                    ast.In,
+                    ast.NotIn,
+                ),
+            ):
+                operators.add(type(node).__name__)
+                operator_count += 1
+            elif isinstance(
+                node,
+                (
+                    ast.If,
+                    ast.For,
+                    ast.While,
+                    ast.Try,
+                    ast.With,
+                    ast.FunctionDef,
+                    ast.ClassDef,
+                    ast.Return,
+                    ast.Assign,
+                    ast.AugAssign,
+                ),
+            ):
+                operators.add(type(node).__name__)
+                operator_count += 1
+            elif isinstance(node, ast.Name):
+                operands.add(node.id)
+                operand_count += 1
+            elif isinstance(node, ast.Constant):
+                operands.add(str(node.value))
+                operand_count += 1
+
+        n1 = len(operators)
+        n2 = len(operands)
+        N1 = operator_count
+        N2 = operand_count
+
+        return n1, n2, N1, N2
+
+    def get_halstead_volume(
+        self, source_code: str, tree: ast.AST | None = None
+    ) -> float:
+        """Halstead Volume を計算"""
+        n1, n2, N1, N2 = self.get_halstead_metrics(source_code, tree)
+
+        if n1 + n2 == 0:
             return 0.0
 
-        tree = self.parse_source_code(source_code)
+        N = N1 + N2
+        n = n1 + n2
+
+        return N * math.log2(n) if n > 0 else 0.0
+
+    def get_halstead_difficulty(
+        self, source_code: str, tree: ast.AST | None = None
+    ) -> float:
+        """Halstead Difficulty を計算"""
+        n1, n2, N1, N2 = self.get_halstead_metrics(source_code, tree)
+
+        if n2 == 0:
+            return 0.0
+
+        return (n1 / 2) * (N2 / n2)
+
+    def get_halstead_effort(
+        self, source_code: str, tree: ast.AST | None = None
+    ) -> float:
+        """Halstead Effort を計算"""
+        volume = self.get_halstead_volume(source_code, tree)
+        difficulty = self.get_halstead_difficulty(source_code, tree)
+
+        return volume * difficulty
+
+    def get_nesting_depth(self, source_code: str, tree: ast.AST | None = None) -> float:
+        """平均ネスト深度を取得"""
+        if not source_code.strip() and tree is None:
+            return 0.0
+
+        tree = tree or self.parse_source_code(source_code)
         depths = []
 
         def calculate_depth(node: ast.AST, current_depth: int = 0) -> None:
@@ -179,9 +307,11 @@ class Readability(
 
         return sum(depths) / len(depths)
 
-    def get_identifier_complexity(self, source_code: str) -> float:
+    def get_identifier_complexity(
+        self, source_code: str, tree: ast.AST | None = None
+    ) -> float:
         """識別子複雑度を取得"""
-        variable_names = self.get_variable_names(source_code)
+        variable_names = self.get_variable_names(source_code, tree)
         if not variable_names:
             return 0.0
 

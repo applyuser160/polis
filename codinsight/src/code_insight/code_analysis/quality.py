@@ -55,6 +55,7 @@ class Quality(AbstractAnalysis[QualityAnalysisResult, QualityAnalysisConfig]):
 
     def analyze(self, source_code: str) -> QualityAnalysisResult:
         """コード解析"""
+        tree = self.parse_source_code(source_code)
         if not self.config.enabled:
             return QualityAnalysisResult(
                 type_hint_coverage=0.0,
@@ -67,14 +68,14 @@ class Quality(AbstractAnalysis[QualityAnalysisResult, QualityAnalysisConfig]):
             )
 
         return QualityAnalysisResult(
-            type_hint_coverage=self.get_type_hint_coverage(source_code),
-            docstring_coverage=self.get_docstring_coverage(source_code),
-            exception_handling_rate=self.get_exception_handling_rate(source_code),
-            avg_function_length=self.get_avg_function_length(source_code),
+            type_hint_coverage=self.get_type_hint_coverage(source_code, tree),
+            docstring_coverage=self.get_docstring_coverage(source_code, tree),
+            exception_handling_rate=self.get_exception_handling_rate(source_code, tree),
+            avg_function_length=self.get_avg_function_length(source_code, tree),
             long_parameter_function_rate=self.get_long_parameter_function_rate(
-                source_code
+                source_code, tree
             ),
-            assert_count=self.get_assert_count(source_code),
+            assert_count=self.get_assert_count(source_code, tree),
             todo_comment_rate=self.get_todo_comment_rate(source_code),
         )
 
@@ -86,12 +87,14 @@ class Quality(AbstractAnalysis[QualityAnalysisResult, QualityAnalysisConfig]):
         """関数定義を取得"""
         return [n for n in ast.walk(tree) if isinstance(n, ast.FunctionDef)]
 
-    def get_type_hint_coverage(self, source_code: str) -> float:
+    def get_type_hint_coverage(
+        self, source_code: str, tree: ast.AST | None = None
+    ) -> float:
         """型ヒント網羅率を取得"""
-        if not source_code.strip():
+        if not source_code.strip() and tree is None:
             return 0.0
 
-        tree = self.parse_source_code(source_code)
+        tree = tree or self.parse_source_code(source_code)
         funcs = self.get_functions(tree)
         if not funcs:
             return 0.0
@@ -125,12 +128,14 @@ class Quality(AbstractAnalysis[QualityAnalysisResult, QualityAnalysisConfig]):
             return 0.0
         return annotated / total
 
-    def get_docstring_coverage(self, source_code: str) -> float:
+    def get_docstring_coverage(
+        self, source_code: str, tree: ast.AST | None = None
+    ) -> float:
         """docstringカバレッジを取得"""
-        if not source_code.strip():
+        if not source_code.strip() and tree is None:
             return 0.0
 
-        tree = self.parse_source_code(source_code)
+        tree = tree or self.parse_source_code(source_code)
         targets = [tree]
         targets.extend(n for n in ast.walk(tree) if isinstance(n, ast.FunctionDef))
         targets.extend(n for n in ast.walk(tree) if isinstance(n, ast.ClassDef))
@@ -142,11 +147,13 @@ class Quality(AbstractAnalysis[QualityAnalysisResult, QualityAnalysisConfig]):
         with_doc = sum(True for t in targets if ast.get_docstring(t))  # type: ignore
         return with_doc / total
 
-    def get_exception_handling_rate(self, source_code: str) -> float:
+    def get_exception_handling_rate(
+        self, source_code: str, tree: ast.AST | None = None
+    ) -> float:
         """例外ハンドリング率を取得"""
-        if not source_code.strip():
+        if not source_code.strip() and tree is None:
             return 0.0
-        tree = self.parse_source_code(source_code)
+        tree = tree or self.parse_source_code(source_code)
         try_count = sum(1 for n in ast.walk(tree) if isinstance(n, ast.Try))
         func_count = len(self.get_functions(tree))
         if func_count == 0:
@@ -170,22 +177,26 @@ class Quality(AbstractAnalysis[QualityAnalysisResult, QualityAnalysisConfig]):
             return len(lines) - start
         return 1
 
-    def get_avg_function_length(self, source_code: str) -> float:
+    def get_avg_function_length(
+        self, source_code: str, tree: ast.AST | None = None
+    ) -> float:
         """平均関数行数を取得"""
-        if not source_code.strip():
+        if not source_code.strip() and tree is None:
             return 0.0
-        tree = self.parse_source_code(source_code)
+        tree = tree or self.parse_source_code(source_code)
         funcs = self.get_functions(tree)
         if not funcs:
             return 0.0
         total = sum(self._count_function_lines(fn, source_code) for fn in funcs)
         return total / len(funcs)
 
-    def get_long_parameter_function_rate(self, source_code: str) -> float:
+    def get_long_parameter_function_rate(
+        self, source_code: str, tree: ast.AST | None = None
+    ) -> float:
         """長引数関数割合を取得"""
-        if not source_code.strip():
+        if not source_code.strip() and tree is None:
             return 0.0
-        tree = self.parse_source_code(source_code)
+        tree = tree or self.parse_source_code(source_code)
         funcs = self.get_functions(tree)
         if not funcs:
             return 0.0
@@ -204,11 +215,11 @@ class Quality(AbstractAnalysis[QualityAnalysisResult, QualityAnalysisConfig]):
         )
         return long_count / len(funcs)
 
-    def get_assert_count(self, source_code: str) -> int:
+    def get_assert_count(self, source_code: str, tree: ast.AST | None = None) -> int:
         """アサーション数を取得"""
-        if not source_code.strip():
+        if not source_code.strip() and tree is None:
             return 0
-        tree = self.parse_source_code(source_code)
+        tree = tree or self.parse_source_code(source_code)
         return sum(1 for n in ast.walk(tree) if isinstance(n, ast.Assert))
 
     def get_todo_comment_rate(self, source_code: str) -> float:

@@ -55,6 +55,7 @@ class Complexity(AbstractAnalysis[ComplexityAnalysisResult, ComplexityAnalysisCo
 
     def analyze(self, source_code: str) -> ComplexityAnalysisResult:
         """コード解析"""
+        tree = ast.parse(source_code) if source_code.strip() else ast.parse("")
         if not self.config.enabled:
             return ComplexityAnalysisResult(
                 cyclomatic_complexity=0.0,
@@ -72,9 +73,9 @@ class Complexity(AbstractAnalysis[ComplexityAnalysisResult, ComplexityAnalysisCo
             halstead_volume=self.get_halstead_volume(source_code),
             halstead_difficulty=self.get_halstead_difficulty(source_code),
             halstead_effort=self.get_halstead_effort(source_code),
-            max_nesting_depth=self.get_max_nesting_depth(source_code),
-            avg_nesting_depth=self.get_avg_nesting_depth(source_code),
-            cognitive_complexity=self.get_cognitive_complexity(source_code),
+            max_nesting_depth=self.get_max_nesting_depth(source_code, tree),
+            avg_nesting_depth=self.get_avg_nesting_depth(source_code, tree),
+            cognitive_complexity=self.get_cognitive_complexity(source_code, tree),
             maintainability_index=self.get_maintainability_index(source_code),
         )
 
@@ -136,13 +137,15 @@ class Complexity(AbstractAnalysis[ComplexityAnalysisResult, ComplexityAnalysisCo
         except Exception:
             return 0.0
 
-    def get_max_nesting_depth(self, source_code: str) -> int:
+    def get_max_nesting_depth(
+        self, source_code: str, tree: ast.AST | None = None
+    ) -> int:
         """最大ネスト深度を取得"""
-        if not source_code.strip():
+        if not source_code.strip() and tree is None:
             return 0
 
         try:
-            tree = ast.parse(source_code)
+            tree = tree or ast.parse(source_code)
             max_depth = 0
 
             def calculate_depth(node: ast.AST, current_depth: int = 0) -> int:
@@ -173,13 +176,15 @@ class Complexity(AbstractAnalysis[ComplexityAnalysisResult, ComplexityAnalysisCo
         except Exception:
             return 0
 
-    def get_avg_nesting_depth(self, source_code: str) -> float:
+    def get_avg_nesting_depth(
+        self, source_code: str, tree: ast.AST | None = None
+    ) -> float:
         """平均ネスト深度を取得"""
-        if not source_code.strip():
+        if not source_code.strip() and tree is None:
             return 0.0
 
         try:
-            tree = ast.parse(source_code)
+            tree = tree or ast.parse(source_code)
             depths = []
 
             def collect_depths(node: ast.AST, current_depth: int = 0) -> None:
@@ -197,13 +202,15 @@ class Complexity(AbstractAnalysis[ComplexityAnalysisResult, ComplexityAnalysisCo
         except Exception:
             return 0.0
 
-    def get_cognitive_complexity(self, source_code: str) -> float:
+    def get_cognitive_complexity(
+        self, source_code: str, tree: ast.AST | None = None
+    ) -> float:
         """認知的複雑度を取得"""
-        if not source_code.strip():
+        if not source_code.strip() and tree is None:
             return 0.0
 
         try:
-            tree = ast.parse(source_code)
+            tree = tree or ast.parse(source_code)
             complexity = 0
 
             def calculate_cognitive_complexity(
