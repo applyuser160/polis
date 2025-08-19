@@ -16,6 +16,7 @@ from code_insight.code_analysis.readability import (
     ReadabilityAnalysisConfig,
 )
 from code_insight.code_analysis.redundancy import Redundancy, RedundancyAnalysisConfig
+from code_insight.code_analysis.security import Security, SecurityAnalysisConfig
 from code_insight.code_analysis.struct import Struct, StructAnalysisConfig
 from code_insight.code_analysis.style import Style, StyleAnalysisConfig
 
@@ -40,6 +41,8 @@ class AnalysisConfigs(BaseModel):
         複雑度解析設定, by default None
     quality : QualityAnalysisConfig | None
         品質解析設定, by default None
+    security : SecurityAnalysisConfig | None
+        セキュリティ解析設定, by default None
     """
 
     style: StyleAnalysisConfig | None = None
@@ -49,6 +52,7 @@ class AnalysisConfigs(BaseModel):
     algorithm: AlgorithmAnalysisConfig | None = None
     complexity: ComplexityAnalysisConfig | None = None
     quality: QualityAnalysisConfig | None = None
+    security: SecurityAnalysisConfig | None = None
 
 
 class CodeAnalysisType(StrEnum):
@@ -71,6 +75,8 @@ class CodeAnalysisType(StrEnum):
         複雑度解析
     QUALITY : str
         品質解析
+    SECURITY : str
+        セキュリティ解析
     """
 
     STYLE = auto()
@@ -80,6 +86,7 @@ class CodeAnalysisType(StrEnum):
     ALGORITHM = auto()
     COMPLEXITY = auto()
     QUALITY = auto()
+    SECURITY = auto()
 
     @staticmethod
     def get_code_analysis_class(
@@ -119,6 +126,8 @@ class CodeAnalysisType(StrEnum):
             return Complexity(config)  # type: ignore
         elif type == CodeAnalysisType.QUALITY:
             return Quality(config)  # type: ignore
+        elif type == CodeAnalysisType.SECURITY:
+            return Security(config)  # type: ignore
         else:
             raise ValueError(f"Invalid code analysis type: {type}")
 
@@ -205,5 +214,6 @@ class CodeAnalysis:
             CodeAnalysisType.ALGORITHM: self.configs.algorithm,
             CodeAnalysisType.COMPLEXITY: self.configs.complexity,
             CodeAnalysisType.QUALITY: self.configs.quality,
+            CodeAnalysisType.SECURITY: self.configs.security,
         }
         return config_map.get(analysis_type)
