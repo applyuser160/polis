@@ -10,7 +10,7 @@ def write(p: Path, content: str) -> None:
 
 
 def simple_py(i: int = 0) -> str:
-    return "def foo():\n" "    '''doc'''\n" "    # comment\n" f"    return {i}\n"
+    return f"def foo():\n    '''doc'''\n    # comment\n    return {i}\n"
 
 
 def test_directory_recursive_and_filter_and_exclude(tmp_path: Path) -> None:

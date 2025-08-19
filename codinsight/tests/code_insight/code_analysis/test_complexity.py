@@ -50,7 +50,7 @@ def test_complexity_empty() -> None:
 
 def test_complexity_simple_function() -> None:
     # Arrange
-    source_code = "def simple_function(x):\n" "    return x * 2\n"
+    source_code = "def simple_function(x):\n    return x * 2\n"
 
     # Act
     result: ComplexityAnalysisResult = Complexity().analyze(source_code=source_code)
