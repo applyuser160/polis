@@ -58,11 +58,7 @@ def test_readability_empty() -> None:
 def test_readability_simple_code() -> None:
     # Arrange
     source_code = (
-        "def add(a, b):\n"
-        "    return a + b\n"
-        "x = 5\n"
-        "y = 10\n"
-        "result = add(x, y)\n"
+        "def add(a, b):\n    return a + b\nx = 5\ny = 10\nresult = add(x, y)\n"
     )
 
     # Act

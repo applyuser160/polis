@@ -19,9 +19,7 @@ def test_default_config_backward_compatibility() -> None:
     result = analysis.analyze([CodeAnalysisType.QUALITY])
 
     assert CodeAnalysisType.QUALITY in result
-    quality_result: QualityAnalysisResult = result[
-        CodeAnalysisType.QUALITY
-    ]  # type: ignore
+    quality_result: QualityAnalysisResult = result[CodeAnalysisType.QUALITY]  # type: ignore
     assert quality_result.long_parameter_function_rate > 0
 
 
@@ -33,9 +31,7 @@ def test_custom_config_injection() -> None:
     analysis = CodeAnalysis(source_code, configs)
     result = analysis.analyze([CodeAnalysisType.QUALITY])
 
-    quality_result: QualityAnalysisResult = result[
-        CodeAnalysisType.QUALITY
-    ]  # type: ignore
+    quality_result: QualityAnalysisResult = result[CodeAnalysisType.QUALITY]  # type: ignore
     assert quality_result.long_parameter_function_rate > 0
 
 
@@ -47,9 +43,7 @@ def test_disabled_analysis() -> None:
     analysis = CodeAnalysis(source_code, configs)
     result = analysis.analyze([CodeAnalysisType.QUALITY])
 
-    quality_result: QualityAnalysisResult = result[
-        CodeAnalysisType.QUALITY
-    ]  # type: ignore
+    quality_result: QualityAnalysisResult = result[CodeAnalysisType.QUALITY]  # type: ignore
     assert quality_result.type_hint_coverage == 0.0
     assert quality_result.assert_count == 0
 
@@ -98,12 +92,8 @@ def test_style_config() -> None:
     analysis_custom = CodeAnalysis(source_code, configs)
     result_custom = analysis_custom.analyze([CodeAnalysisType.STYLE])
 
-    style_default: StyleAnalysisResult = result_default[
-        CodeAnalysisType.STYLE
-    ]  # type: ignore
-    style_custom: StyleAnalysisResult = result_custom[
-        CodeAnalysisType.STYLE
-    ]  # type: ignore
+    style_default: StyleAnalysisResult = result_default[CodeAnalysisType.STYLE]  # type: ignore
+    style_custom: StyleAnalysisResult = result_custom[CodeAnalysisType.STYLE]  # type: ignore
 
     assert style_custom.naming_convention <= style_default.naming_convention
 
@@ -145,7 +135,5 @@ def test_ignored_function_names_config() -> None:
     analysis = CodeAnalysis(source_code, configs)
     result = analysis.analyze([CodeAnalysisType.REDUNDANCY])
 
-    redundancy_result: RedundancyAnalysisResult = result[
-        CodeAnalysisType.REDUNDANCY
-    ]  # type: ignore
+    redundancy_result: RedundancyAnalysisResult = result[CodeAnalysisType.REDUNDANCY]  # type: ignore
     assert redundancy_result.unused_code_rate >= 0.0

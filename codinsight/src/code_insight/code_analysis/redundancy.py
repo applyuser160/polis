@@ -286,8 +286,7 @@ class Redundancy(AbstractAnalysis[RedundancyAnalysisResult, RedundancyAnalysisCo
                     if isinstance(node_value, bytes):
                         node_value = node_value.decode()
                     structure_elements.append(
-                        f"return_const_{type(node.value.value).__name__}_"
-                        f"{node_value}"
+                        f"return_const_{type(node.value.value).__name__}_{node_value}"
                     )
                 elif isinstance(node.value, ast.BinOp):
                     structure_elements.append(

@@ -35,6 +35,22 @@ addopts = "--exclude=tests"
 packages = ["src/code_insight"]
 include = ["src/code_insight/py.typed"]
 
+[tool.ruff]
+line-length = 88
+include = ["codinsight/**/*.py"]
+
+[tool.ruff.lint]
+select = ["F", "E", "I", "B"]
+
+[tool.ruff.lint.isort]
+# black profileと同等の設定
+split-on-trailing-comma = true
+combine-as-imports = true
+
+[tool.ruff.format]
+quote-style = "double"
+indent-style = "space"
+
 [tool.pytest.ini_options]
 testpaths = ["tests"]
 pythonpath = ["src"]
