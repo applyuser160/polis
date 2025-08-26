@@ -2,9 +2,8 @@ name: Code Insight Analysis
 
 on:
   pull_request:
-    types: [opened, synchronize]
-    paths:
-      - '**/*.py'
+    branches:
+      - master  # main への PR に対して実行
 
 jobs:
   code-analysis:
