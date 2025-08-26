@@ -1,0 +1,110 @@
+name: Code Insight Analysis
+
+on:
+  pull_request:
+    types: [opened, synchronize]
+    paths:
+      - '**/*.py'
+
+jobs:
+  code-analysis:
+    runs-on: ubuntu-latest
+    
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v4
+      
+    - name: Set up Python
+      uses: actions/setup-python@v4
+      with:
+        python-version: '3.12'
+        
+    - name: Install dependencies
+      run: |
+        cd codinsight
+        pip install -e .
+        
+    - name: Run code analysis
+      run: |
+        cd codinsight
+        python -c "
+        import os
+        from pathlib import Path
+        from code_insight.core import CodeAnalysis, CodeAnalysisType
+        from code_insight.trend_analysis.trend_analysis import TrendAnalysis
+        
+        # Find all Python files
+        py_files = list(Path('.').rglob('*.py'))
+        results = []
+        
+        for py_file in py_files:
+            if py_file.stat().st_size > 0:
+                with open(py_file, 'r', encoding='utf-8') as f:
+                    source_code = f.read()
+                
+                analysis = CodeAnalysis()
+                analysis.source_code = source_code
+                result = analysis.analyze([CodeAnalysisType.STRUCT, CodeAnalysisType.STYLE])
+                results.append([result[CodeAnalysisType.STRUCT], result[CodeAnalysisType.STYLE]])
+        
+        # Generate clustering image
+        if results:
+            trend = TrendAnalysis(results, [str(f) for f in py_files[:len(results)]])
+            trend.output_image()
+        "
+        
+    - name: Upload clustering image
+      if: always()
+      uses: actions/upload-artifact@v3
+      with:
+        name: code-analysis-clusters
+        path: codinsight/clusters.png
+        
+    - name: Comment PR with analysis
+      if: always()
+      uses: actions/github-script@v6
+      with:
+        script: |
+          const fs = require('fs');
+          const path = require('path');
+          
+          const imagePath = 'codinsight/clusters.png';
+          if (fs.existsSync(imagePath)) {
+            const { data: upload } = await github.rest.repos.createRelease({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              tag_name: `analysis-${context.sha.substring(0, 7)}`,
+              name: 'Code Analysis Results',
+              body: 'Automated code analysis clustering results',
+              draft: true
+            });
+            
+            const imageBuffer = fs.readFileSync(imagePath);
+            await github.rest.repos.uploadReleaseAsset({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              release_id: upload.id,
+              name: 'clusters.png',
+              data: imageBuffer
+            });
+            
+            await github.rest.issues.createComment({
+              issue_number: context.issue.number,
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              body: `## 📊 Code Analysis Results
+              
+              コード解析とクラスタリングが完了しました。
+              
+              ![Code Clustering](${upload.upload_url.replace('{?name,label}', '')}clusters.png)
+              
+              詳細な解析結果は[Artifacts](${context.payload.pull_request.html_url}/checks)からダウンロードできます。`
+            });
+          } else {
+            await github.rest.issues.createComment({
+              issue_number: context.issue.number,
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              body: '⚠️ コード解析でエラーが発生しました。ログを確認してください。'
+            });
+          }
