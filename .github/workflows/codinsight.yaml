@@ -81,13 +81,18 @@ jobs:
       run: |
         sudo apt-get install -y gh
 
-    - name: Comment PR with analysis image
-      if: always()
+    - name: Upload image to release
       run: |
+        gh release create temp-${{ github.run_id }} --notes "temp" || true
+        gh release upload temp-${{ github.run_id }} codinsight/clusters.png --clobber
+      env:
+        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
+    - name: Comment PR with image
+      run: |
+        IMAGE_URL="https://github.com/${{ github.repository }}/releases/download/temp-${{ github.run_id }}/clusters.png"
         gh pr comment ${{ github.event.pull_request.number }} \
-          --body "## 📊 Code Analysis Results\n\n" \
-          --body "コード解析とクラスタリングが完了しました。\n\n" \ 
-          --body "![clusters](codinsight/clusters.png)" \
-          --repo "${{ github.repository }}"
+          --repo "${{ github.repository }}" \
+          --body "## 📊 Code Analysis Results\n\n![clusters](${IMAGE_URL})"
       env:
         GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
