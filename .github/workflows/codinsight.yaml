@@ -108,13 +108,7 @@ jobs:
               issue_number: context.issue.number,
               owner: context.repo.owner,
               repo: context.repo.repo,
-              body: `## 📊 Code Analysis Results
-              
-              コード解析とクラスタリングが完了しました。
-              
-              ![Code Clustering](${upload.upload_url.replace('{?name,label}', '')}clusters.png)
-              
-              詳細な解析結果は[Artifacts](${context.payload.pull_request.html_url}/checks)からダウンロードできます。`
+              body: `## 📊 Code Analysis Results\n\nコード解析とクラスタリングが完了しました。\n\n![Code Clustering](${upload.upload_url.replace('{?name,label}', '')}clusters.png)\n\n詳細な解析結果は[Artifacts](${context.payload.pull_request.html_url}/checks)からダウンロードできます。`
             });
           } else {
             await github.rest.issues.createComment({
