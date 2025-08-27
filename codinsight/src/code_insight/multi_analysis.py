@@ -1,6 +1,6 @@
 import os
 from pathlib import Path
-from typing import Any, Iterable, cast
+from typing import Iterable
 
 from pydantic import BaseModel
 
@@ -24,7 +24,7 @@ class FileAnalysisResult(BaseModel):
     """
 
     path: str
-    results: dict[str, dict[str, Any]]
+    results: dict[CodeAnalysisType, BaseAnalysisResult]
 
 
 class AggregateStats(BaseModel):
@@ -46,7 +46,7 @@ class AggregateStats(BaseModel):
     total_files: int
     analyzed_files: int
     errors: list[str]
-    by_type_avg: dict[str, dict[str, float]]
+    by_type_avg: dict[CodeAnalysisType, dict[str, float]]
 
 
 class MultiAnalysisResult(BaseModel):
@@ -169,16 +169,15 @@ def analyze_file(
     source_code = path.read_text(encoding="utf-8", errors="ignore")
     analysis = CodeAnalysis(source_code=source_code, configs=configs)
     result_map = analysis.analyze(types)
-    as_dict: dict[str, dict[str, Any]] = {}
+    as_dict: dict[CodeAnalysisType, BaseAnalysisResult] = {}
     for t, model in result_map.items():
-        m = cast(BaseAnalysisResult, model)
-        as_dict[t.name] = m.model_dump()
+        as_dict[t] = model
     return FileAnalysisResult(path=str(path), results=as_dict)
 
 
 def _aggregate_numeric_means(
     files: list[FileAnalysisResult],
-) -> dict[str, dict[str, float]]:
+) -> dict[CodeAnalysisType, dict[str, float]]:
     """
     数値メトリクスの平均値を集約
 
@@ -192,17 +191,17 @@ def _aggregate_numeric_means(
     dict[str, dict[str, float]]
         解析タイプ別の平均値辞書
     """
-    by_type: dict[str, dict[str, list[float]]] = {}
+    by_type: dict[CodeAnalysisType, dict[str, list[float]]] = {}
 
     for fa in files:
         for tname, metrics in fa.results.items():
             if tname not in by_type:
                 by_type[tname] = {}
-            for key, val in metrics.items():
+            for key, val in metrics.model_dump().items():
                 if isinstance(val, (int, float)):
                     by_type[tname].setdefault(key, []).append(float(val))
 
-    avg: dict[str, dict[str, float]] = {}
+    avg: dict[CodeAnalysisType, dict[str, float]] = {}
     for tname, metrics_map in by_type.items():
         avg[tname] = {}
         for key, values in metrics_map.items():

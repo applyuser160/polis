@@ -1,5 +1,5 @@
 from enum import StrEnum, auto
-from typing import Any, Type
+from typing import Any
 
 from pydantic import BaseModel
 
@@ -165,7 +165,7 @@ class CodeAnalysis:
 
     def analyze(
         self, types: list[CodeAnalysisType]
-    ) -> dict[CodeAnalysisType, Type[BaseAnalysisResult]]:
+    ) -> dict[CodeAnalysisType, BaseAnalysisResult]:
         """
         コード解析
 
@@ -176,10 +176,10 @@ class CodeAnalysis:
 
         Returns
         -------
-        dict[CodeAnalysisType, Type[BaseAnalysisResult]]
+        dict[CodeAnalysisType, BaseAnalysisResult]
             解析結果の辞書
         """
-        result: dict[CodeAnalysisType, Type[BaseAnalysisResult]] = {}
+        result: dict[CodeAnalysisType, BaseAnalysisResult] = {}
         for type in types:
             config = self._get_config_for_type(type)
             result[type] = CodeAnalysisType.get_code_analysis_class(

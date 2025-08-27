@@ -1,0 +1,98 @@
+name: Code Insight Analysis
+
+on:
+  pull_request:
+    branches:
+      - master  # main への PR に対して実行
+
+jobs:
+  code-analysis:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+      pull-requests: write
+      issues: write 
+      actions: write
+    
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v4
+      
+    - name: Set up Python
+      uses: actions/setup-python@v4
+      with:
+        python-version: '3.12'
+        
+    - name: Install dependencies
+      run: |
+        cd codinsight
+        pip install codinsight
+        
+    - name: Run code analysis
+      run: |
+        cd codinsight
+        python -c "
+        from pathlib import Path
+        from code_insight.core import CodeAnalysisType
+        from code_insight.multi_analysis import MultiFileAnalyzer, MultiAnalysisResult
+        from code_insight import TrendAnalysis
+
+        analyzer = MultiFileAnalyzer(
+            exts={'.py'},
+            excludes={'node_modules', 'target', '.git', '.venv', '__pycache__'},
+        )
+
+        result: MultiAnalysisResult = analyzer.analyze(
+            ['src'],
+            [
+                CodeAnalysisType.STYLE,
+                CodeAnalysisType.STRUCT,
+                CodeAnalysisType.READABILITY,
+                CodeAnalysisType.REDUNDANCY,
+                CodeAnalysisType.ALGORITHM,
+                CodeAnalysisType.COMPLEXITY,
+                CodeAnalysisType.QUALITY,
+                CodeAnalysisType.SECURITY,
+            ],
+        )
+
+        analysis_result = [
+            [result for result in file.results.values()]
+            for file in result.files
+        ]
+        labels = [Path(file.path).name for file in result.files]
+
+        trend_analysis = TrendAnalysis(
+            code_analysis_results=analysis_result,
+            code_labels=labels,
+        )
+
+        trend_analysis.output_image()
+        "
+        
+    - name: Upload clustering image
+      if: always()
+      uses: actions/upload-artifact@v4
+      with:
+        name: code-analysis-clusters
+        path: codinsight/clusters.png
+        
+    - name: Setup GitHub CLI
+      run: |
+        sudo apt-get install -y gh
+
+    - name: Upload image to release
+      run: |
+        gh release create temp-${{ github.run_id }} --notes "temp" || true
+        gh release upload temp-${{ github.run_id }} codinsight/clusters.png --clobber
+      env:
+        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
+    - name: Comment PR with image
+      run: |
+        IMAGE_URL="https://github.com/${{ github.repository }}/releases/download/temp-${{ github.run_id }}/clusters.png"
+        gh pr comment ${{ github.event.pull_request.number }} \
+          --repo "${{ github.repository }}" \
+          --body "## 📊 Code Analysis Results    ![clusters](${IMAGE_URL})"
+      env:
+        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
