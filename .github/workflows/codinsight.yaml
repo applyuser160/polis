@@ -12,6 +12,7 @@ jobs:
       contents: write
       pull-requests: write
       issues: write 
+      actions: write
     
     steps:
     - name: Checkout code
@@ -84,7 +85,9 @@ jobs:
       if: always()
       run: |
         gh pr comment ${{ github.event.pull_request.number }} \
-          --body "## 📊 Code Analysis Results\n\nコード解析とクラスタリングが完了しました。\n\n![clusters](codinsight/clusters.png)" \
+          --body "## 📊 Code Analysis Results\n\n" \
+          --body "コード解析とクラスタリングが完了しました。\n\n" \ 
+          --body "![clusters](codinsight/clusters.png)" \
           --repo "${{ github.repository }}"
       env:
         GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
