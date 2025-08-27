@@ -31,9 +31,9 @@ def test_directory_recursive_and_filter_and_exclude(tmp_path: Path) -> None:
     assert result.aggregate.total_files == 2
     assert len(result.files) == 2
     for fa in result.files:
-        assert "STYLE" in fa.results
-        style = fa.results["STYLE"]
-        assert "naming_convention" in style
+        assert CodeAnalysisType.STYLE in fa.results
+        style = fa.results[CodeAnalysisType.STYLE]
+        assert "naming_convention" in style.model_fields_set
 
 
 def test_mixed_inputs_multi_dirs_and_files(tmp_path: Path) -> None:
@@ -59,8 +59,8 @@ def test_mixed_inputs_multi_dirs_and_files(tmp_path: Path) -> None:
     assert result.aggregate.total_files == 4
     assert len(result.files) == 4
     for fa in result.files:
-        assert "STYLE" in fa.results
-        assert "STRUCT" in fa.results
+        assert CodeAnalysisType.STYLE in fa.results
+        assert CodeAnalysisType.STRUCT in fa.results
 
 
 def test_json_serialization(tmp_path: Path) -> None:
