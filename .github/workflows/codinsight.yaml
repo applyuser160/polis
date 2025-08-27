@@ -27,29 +27,42 @@ jobs:
       run: |
         cd codinsight
         python -c "
-        import os
         from pathlib import Path
-        from code_insight.core import CodeAnalysis, CodeAnalysisType
-        from code_insight.trend_analysis.trend_analysis import TrendAnalysis
-        
-        # Find all Python files
-        py_files = list(Path('.').rglob('*.py'))
-        results = []
-        
-        for py_file in py_files:
-            if py_file.stat().st_size > 0:
-                with open(py_file, 'r', encoding='utf-8') as f:
-                    source_code = f.read()
-                
-                analysis = CodeAnalysis()
-                analysis.source_code = source_code
-                result = analysis.analyze([CodeAnalysisType.STRUCT, CodeAnalysisType.STYLE])
-                results.append([result[CodeAnalysisType.STRUCT], result[CodeAnalysisType.STYLE]])
-        
-        # Generate clustering image
-        if results:
-            trend = TrendAnalysis(results, [str(f) for f in py_files[:len(results)]])
-            trend.output_image()
+        from code_insight.core import CodeAnalysisType
+        from code_insight.multi_analysis import MultiFileAnalyzer, MultiAnalysisResult
+        from code_insight import TrendAnalysis
+
+        analyzer = MultiFileAnalyzer(
+            exts={".py"},
+            excludes={"node_modules", "target", ".git", ".venv", "__pycache__"},
+        )
+
+        result: MultiAnalysisResult = analyzer.analyze(
+            ["src", "tests"],
+            [
+                CodeAnalysisType.STYLE,
+                CodeAnalysisType.STRUCT,
+                CodeAnalysisType.READABILITY,
+                CodeAnalysisType.REDUNDANCY,
+                CodeAnalysisType.ALGORITHM,
+                CodeAnalysisType.COMPLEXITY,
+                CodeAnalysisType.QUALITY,
+                CodeAnalysisType.SECURITY,
+            ],
+        )
+
+        analysis_result = [
+            [result for result in file.results.values()]
+            for file in result.files
+        ]
+        labels = [Path(file.path).name for file in result.files]
+
+        trend_analysis = TrendAnalysis(
+            code_analysis_results=analysis_result,
+            code_labels=labels,
+        )
+
+        trend_analysis.output_image()
         "
         
     - name: Upload clustering image
