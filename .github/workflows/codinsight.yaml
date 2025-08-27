@@ -33,12 +33,12 @@ jobs:
         from code_insight import TrendAnalysis
 
         analyzer = MultiFileAnalyzer(
-            exts={".py"},
-            excludes={"node_modules", "target", ".git", ".venv", "__pycache__"},
+            exts={'.py'},
+            excludes={'node_modules', 'target', '.git', '.venv', '__pycache__'},
         )
 
         result: MultiAnalysisResult = analyzer.analyze(
-            ["src", "tests"],
+            ['src', 'tests'],
             [
                 CodeAnalysisType.STYLE,
                 CodeAnalysisType.STRUCT,
