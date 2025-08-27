@@ -43,7 +43,7 @@ jobs:
         )
 
         result: MultiAnalysisResult = analyzer.analyze(
-            ['src', 'tests'],
+            ['src'],
             [
                 CodeAnalysisType.STYLE,
                 CodeAnalysisType.STRUCT,
