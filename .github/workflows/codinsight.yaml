@@ -26,7 +26,7 @@ jobs:
     - name: Install dependencies
       run: |
         cd codinsight
-        pip install -e .
+        pip install codinsight
         
     - name: Run code analysis
       run: |
