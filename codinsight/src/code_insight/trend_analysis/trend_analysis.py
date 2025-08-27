@@ -167,7 +167,7 @@ class TrendAnalysis:
                     X_vis[i, 0] + 0.02,
                     X_vis[i, 1] + 0.02,
                     self.code_labels[i],
-                    fontsize=6,
+                    fontsize=7,
                 )
 
         plt.title("Clustering Result")
