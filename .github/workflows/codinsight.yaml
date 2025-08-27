@@ -93,6 +93,6 @@ jobs:
         IMAGE_URL="https://github.com/${{ github.repository }}/releases/download/temp-${{ github.run_id }}/clusters.png"
         gh pr comment ${{ github.event.pull_request.number }} \
           --repo "${{ github.repository }}" \
-          --body "## 📊 Code Analysis Results\n\n![clusters](${IMAGE_URL})"
+          --body "## 📊 Code Analysis Results    ![clusters](${IMAGE_URL})"
       env:
         GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
