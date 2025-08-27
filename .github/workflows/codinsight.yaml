@@ -76,27 +76,15 @@ jobs:
         name: code-analysis-clusters
         path: codinsight/clusters.png
         
-    - name: Comment PR with analysis
+    - name: Setup GitHub CLI
+      run: |
+        sudo apt-get install -y gh
+
+    - name: Comment PR with analysis image
       if: always()
-      uses: actions/github-script@v6
-      with:
-        script: |
-          const fs = require('fs');
-          const imagePath = 'codinsight/clusters.png';
-          if (fs.existsSync(imagePath)) {
-            const imageBuffer = fs.readFileSync(imagePath);
-            const base64Image = imageBuffer.toString('base64');
-            await github.rest.issues.createComment({
-              issue_number: context.issue.number,
-              owner: context.repo.owner,
-              repo: context.repo.repo,
-              body: `## 📊 Code Analysis Results\n\nコード解析とクラスタリングが完了しました。\n\n<img src="data:image/png;base64,${base64Image}" alt="Code Clustering" width="600"/>\n\n詳細な解析結果はArtifactsからダウンロードできます。`
-            });
-          } else {
-            await github.rest.issues.createComment({
-              issue_number: context.issue.number,
-              owner: context.repo.owner,
-              repo: context.repo.repo,
-              body: '⚠️ コード解析でエラーが発生しました。ログを確認してください。'
-            });
-          }
+      run: |
+        gh pr comment ${{ github.event.pull_request.number }} \
+          --body "## 📊 Code Analysis Results\n\nコード解析とクラスタリングが完了しました。\n\n![clusters](codinsight/clusters.png)" \
+          --repo "${{ github.repository }}"
+      env:
+        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
