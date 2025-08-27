@@ -82,33 +82,15 @@ jobs:
       with:
         script: |
           const fs = require('fs');
-          const path = require('path');
-          
           const imagePath = 'codinsight/clusters.png';
           if (fs.existsSync(imagePath)) {
-            const { data: upload } = await github.rest.repos.createRelease({
-              owner: context.repo.owner,
-              repo: context.repo.repo,
-              tag_name: `analysis-${context.sha.substring(0, 7)}`,
-              name: 'Code Analysis Results',
-              body: 'Automated code analysis clustering results',
-              draft: true
-            });
-            
             const imageBuffer = fs.readFileSync(imagePath);
-            await github.rest.repos.uploadReleaseAsset({
-              owner: context.repo.owner,
-              repo: context.repo.repo,
-              release_id: upload.id,
-              name: 'clusters.png',
-              data: imageBuffer
-            });
-            
+            const base64Image = imageBuffer.toString('base64');
             await github.rest.issues.createComment({
               issue_number: context.issue.number,
               owner: context.repo.owner,
               repo: context.repo.repo,
-              body: `## 📊 Code Analysis Results\n\nコード解析とクラスタリングが完了しました。\n\n![Code Clustering](${upload.upload_url.replace('{?name,label}', '')}clusters.png)\n\n詳細な解析結果は[Artifacts](${context.payload.pull_request.html_url}/checks)からダウンロードできます。`
+              body: `## 📊 Code Analysis Results\n\nコード解析とクラスタリングが完了しました。\n\n<img src="data:image/png;base64,${base64Image}" alt="Code Clustering" width="600"/>\n\n詳細な解析結果はArtifactsからダウンロードできます。`
             });
           } else {
             await github.rest.issues.createComment({
