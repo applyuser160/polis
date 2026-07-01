@@ -1,11 +1,14 @@
-from typing import Any
 
 from code_insight.code_analysis.abstract import (
     AbstractAnalysis,
     BaseAnalysisConfig,
     BaseAnalysisResult,
 )
-from codetovec import CodeToVec
+
+try:
+    from codetovec import CodeToVec
+except ImportError:
+    pass
 
 
 class VectorAnalysisConfig(BaseAnalysisConfig):

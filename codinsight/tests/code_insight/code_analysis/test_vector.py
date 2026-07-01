@@ -1,9 +1,18 @@
 from unittest.mock import MagicMock, patch
 
 import pytest
-from codetovec import CodeToVec
 
-from code_insight.code_analysis.vector import Vector, VectorAnalysisConfig, VectorAnalysisResult
+try:
+    from codetovec import CodeToVec
+except ImportError:
+    pass
+
+
+from code_insight.code_analysis.vector import (
+    Vector,
+    VectorAnalysisConfig,
+    VectorAnalysisResult,
+)
 
 
 @pytest.fixture
@@ -23,7 +32,9 @@ def test_vector_analysis_default_config(sample_code):
     mock_codetovec = MagicMock(spec=CodeToVec)
     mock_codetovec.execute.return_value = [0.1, 0.2, 0.3]
 
-    with patch("code_insight.code_analysis.vector.CodeToVec", return_value=mock_codetovec):
+    with patch(
+        "code_insight.code_analysis.vector.CodeToVec", return_value=mock_codetovec
+    ):
         vector_analysis = Vector()
         result = vector_analysis.analyze(sample_code)
 
@@ -52,7 +63,9 @@ def test_vector_analysis_custom_config(sample_code):
     mock_codetovec = MagicMock(spec=CodeToVec)
     mock_codetovec.execute.return_value = [0.4, 0.5, 0.6]
 
-    with patch("code_insight.code_analysis.vector.CodeToVec", return_value=mock_codetovec):
+    with patch(
+        "code_insight.code_analysis.vector.CodeToVec", return_value=mock_codetovec
+    ):
         vector_analysis = Vector(config)
         result = vector_analysis.analyze(sample_code)
 
