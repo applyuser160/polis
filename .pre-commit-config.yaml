@@ -43,3 +43,5 @@ repos:
       - id: bandit
         language_version: python3
         files: ^codinsight/src/
+        additional_dependencies:
+          - pbr

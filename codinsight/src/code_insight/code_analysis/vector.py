@@ -1,11 +1,11 @@
+from codetovec import CodeToVec
+from pydantic import model_serializer
 
 from code_insight.code_analysis.abstract import (
     AbstractAnalysis,
     BaseAnalysisConfig,
     BaseAnalysisResult,
 )
-
-from codetovec import CodeToVec
 
 
 class VectorAnalysisConfig(BaseAnalysisConfig):
@@ -39,11 +39,20 @@ class VectorAnalysisResult(BaseAnalysisResult):
 
     vector: list[float]
 
+    @model_serializer
+    def serialize_model(self) -> dict[str, float]:
+        """モデルをフラットな辞書としてシリアライズします。
+
+        Returns
+        -------
+        dict[str, float]
+            展開されたベクトルの辞書表現
+        """
+        return {f"vector_{i}": float(v) for i, v in enumerate(self.vector)}
+
 
 class Vector(AbstractAnalysis[VectorAnalysisResult, VectorAnalysisConfig]):
-    """
-    ベクトル解析クラス
-    """
+    """ベクトル解析クラス"""
 
     def get_default_config(self) -> VectorAnalysisConfig:
         """
