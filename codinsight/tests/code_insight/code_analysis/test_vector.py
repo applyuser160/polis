@@ -2,10 +2,7 @@ from unittest.mock import MagicMock, patch
 
 import pytest
 
-try:
-    from codetovec import CodeToVec
-except ImportError:
-    pass
+from codetovec import CodeToVec
 
 
 from code_insight.code_analysis.vector import (

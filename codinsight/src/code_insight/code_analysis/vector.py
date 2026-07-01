@@ -5,10 +5,7 @@ from code_insight.code_analysis.abstract import (
     BaseAnalysisResult,
 )
 
-try:
-    from codetovec import CodeToVec
-except ImportError:
-    pass
+from codetovec import CodeToVec
 
 
 class VectorAnalysisConfig(BaseAnalysisConfig):
