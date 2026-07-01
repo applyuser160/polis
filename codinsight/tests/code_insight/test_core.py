@@ -1,6 +1,7 @@
 from code_insight.code_analysis.readability import ReadabilityAnalysisResult
 from code_insight.code_analysis.struct import StructAnalysisResult
 from code_insight.code_analysis.style import StyleAnalysisResult
+from code_insight.code_analysis.vector import VectorAnalysisResult
 from code_insight.core import CodeAnalysis, CodeAnalysisType
 
 
@@ -22,17 +23,24 @@ def test_core_normal() -> None:
 
     # Act
     result = code_analysis.analyze(
-        [CodeAnalysisType.STYLE, CodeAnalysisType.STRUCT, CodeAnalysisType.READABILITY]
+        [
+            CodeAnalysisType.STYLE,
+            CodeAnalysisType.STRUCT,
+            CodeAnalysisType.READABILITY,
+            CodeAnalysisType.VECTOR,
+        ]
     )
 
     # Assert
-    assert len(result) == 3
+    assert len(result) == 4
     assert CodeAnalysisType.STYLE in result
     assert CodeAnalysisType.STRUCT in result
     assert CodeAnalysisType.READABILITY in result
+    assert CodeAnalysisType.VECTOR in result
     assert isinstance(result[CodeAnalysisType.STYLE], StyleAnalysisResult)
     assert isinstance(result[CodeAnalysisType.STRUCT], StructAnalysisResult)
     assert isinstance(result[CodeAnalysisType.READABILITY], ReadabilityAnalysisResult)
+    assert isinstance(result[CodeAnalysisType.VECTOR], VectorAnalysisResult)
 
 
 def test_core_empty() -> None:
