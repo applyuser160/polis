@@ -19,6 +19,7 @@ from code_insight.code_analysis.redundancy import Redundancy, RedundancyAnalysis
 from code_insight.code_analysis.security import Security, SecurityAnalysisConfig
 from code_insight.code_analysis.struct import Struct, StructAnalysisConfig
 from code_insight.code_analysis.style import Style, StyleAnalysisConfig
+from code_insight.code_analysis.vector import Vector, VectorAnalysisConfig
 
 
 class AnalysisConfigs(BaseModel):
@@ -53,6 +54,7 @@ class AnalysisConfigs(BaseModel):
     complexity: ComplexityAnalysisConfig | None = None
     quality: QualityAnalysisConfig | None = None
     security: SecurityAnalysisConfig | None = None
+    vector: VectorAnalysisConfig | None = None
 
 
 class CodeAnalysisType(StrEnum):
@@ -77,6 +79,8 @@ class CodeAnalysisType(StrEnum):
         品質解析
     SECURITY : str
         セキュリティ解析
+    VECTOR : str
+        ベクトル解析
     """
 
     STYLE = auto()
@@ -87,6 +91,7 @@ class CodeAnalysisType(StrEnum):
     COMPLEXITY = auto()
     QUALITY = auto()
     SECURITY = auto()
+    VECTOR = auto()
 
     @staticmethod
     def get_code_analysis_class(
@@ -128,6 +133,8 @@ class CodeAnalysisType(StrEnum):
             return Quality(config)  # type: ignore
         elif type == CodeAnalysisType.SECURITY:
             return Security(config)  # type: ignore
+        elif type == CodeAnalysisType.VECTOR:
+            return Vector(config)  # type: ignore
         else:
             raise ValueError(f"Invalid code analysis type: {type}")
 
@@ -215,5 +222,6 @@ class CodeAnalysis:
             CodeAnalysisType.COMPLEXITY: self.configs.complexity,
             CodeAnalysisType.QUALITY: self.configs.quality,
             CodeAnalysisType.SECURITY: self.configs.security,
+            CodeAnalysisType.VECTOR: self.configs.vector,
         }
         return config_map.get(analysis_type)
