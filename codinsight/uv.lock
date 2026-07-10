@@ -53,15 +53,15 @@ wheels = [
 
 [[package]]
 name = "codetovec"
-version = "0.0.2"
+version = "0.0.3"
 source = { registry = "https://pypi.org/simple" }
 dependencies = [
     { name = "torch" },
     { name = "transformers" },
 ]
-sdist = { url = "https://files.pythonhosted.org/packages/f3/08/99193bc9ae32f29d713fd86c572bd28f437f3f5c81fca96f901d8ef23dd9/codetovec-0.0.2.tar.gz", hash = "sha256:911b5e51687ddb3ec538f1694b95bca2b35e4c35c1ef82d834902aeed78c9084", size = 2815, upload-time = "2026-07-01T09:17:59.371Z" }
+sdist = { url = "https://files.pythonhosted.org/packages/f4/9a/00b64c7b9d85bbf06f7707a3e264b9ae311256cadb3e7c8d0577061a15a2/codetovec-0.0.3.tar.gz", hash = "sha256:ec408dfbd725de477fc2326b37f6e874d03fcdde6bd0d76b0e46547f41ae657f", size = 2825, upload-time = "2026-07-10T02:00:50.844Z" }
 wheels = [
-    { url = "https://files.pythonhosted.org/packages/10/3c/24361b542687ba068e47dfb8b71d87919fe5e3cb116680ae3587ca3b9e3f/codetovec-0.0.2-py3-none-any.whl", hash = "sha256:3ab4ae3299ff637386cfd6bda6dd4a0c386991ae3b5698405d1fe745ca527277", size = 2530, upload-time = "2026-07-01T09:17:58.503Z" },
+    { url = "https://files.pythonhosted.org/packages/02/0a/0a672a719b5e1091ab7c27f39ec231bd7399f34871df99badaae581d0d18/codetovec-0.0.3-py3-none-any.whl", hash = "sha256:d907285aacd5145003a10243fc8359971b337fef29f81bea3fa48aba6d8e6fec", size = 2529, upload-time = "2026-07-10T02:00:49.788Z" },
 ]
 
 [[package]]
@@ -84,7 +84,7 @@ dependencies = [
 
 [package.metadata]
 requires-dist = [
-    { name = "codetovec", specifier = "==0.0.2" },
+    { name = "codetovec", specifier = "==0.0.3" },
     { name = "matplotlib", specifier = ">=3.10.5" },
     { name = "pandas", specifier = ">=2.3.1" },
     { name = "pycodestyle", specifier = ">=2.14.0" },
